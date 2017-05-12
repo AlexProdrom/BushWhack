@@ -1,0 +1,56 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="bw.bushwhack.fragments.ProfileInfoFragment">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/profile_image"
+            android:layout_width="125dp"
+            android:layout_height="125dp"
+            app:civ_border_width="4dp"
+            android:src="@drawable/picture_dummy_a"
+            android:layout_marginTop="32dp"
+            app:civ_border_color="#FFFFFFFF" />
+        <!-- civ border is not rendered for some reason-->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/text_name"
+            android:text="Elliott Cullen"
+            android:textAppearance="@android:style/TextAppearance.Material.Large"
+            android:textAlignment="center"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"/>
+
+        <TextView
+            android:text="\@ellicullen89"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/text_nickname"
+            android:textAlignment="center"
+            android:fontFamily="sans-serif"
+            android:paddingTop="0dp"
+            android:paddingBottom="16dp"/>
+
+        <Button
+            android:text="EDIT PROFILE"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/button"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:textSize="12sp"
+            android:elevation="0dp" />
+    </LinearLayout>
+</FrameLayout>
