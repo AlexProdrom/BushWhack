@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "24.0.3"
+    buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "bw.bushwhack"
         minSdkVersion 23
@@ -24,14 +24,18 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
     // for the design views
-    compile 'com.android.support:design:25.2.0'
+    compile 'com.android.support:design:25.3.1'
     // Annotate fields with @BindView and a view ID for Butter Knife to find and automatically cast the corresponding view in your layout.
     // http://jakewharton.github.io/butterknife/
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     // circle image
     compile 'de.hdodenhof:circleimageview:2.1.0'
+    //firebase database
+    compile 'com.google.firebase:firebase-core:10.2.4'
 }
+//this plugin will read the google-services.json file and inject some of the values in the app
+apply plugin: 'com.google.gms.google-services'
