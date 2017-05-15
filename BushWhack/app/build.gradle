@@ -35,7 +35,11 @@ dependencies {
     // circle image
     compile 'de.hdodenhof:circleimageview:2.1.0'
     //firebase database
+    compile 'com.google.firebase:firebase-database:10.2.4'
+    //firebase analytics
     compile 'com.google.firebase:firebase-core:10.2.4'
+    //firebase authentification
+    compile 'com.google.firebase:firebase-auth:10.2.4'
 }
 //this plugin will read the google-services.json file and inject some of the values in the app
 apply plugin: 'com.google.gms.google-services'
