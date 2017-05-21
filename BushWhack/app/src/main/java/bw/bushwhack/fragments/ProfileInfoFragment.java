@@ -13,17 +13,18 @@ import java.util.Random;
 
 import butterknife.BindView;
 import bw.bushwhack.R;
+import bw.bushwhack.interfaces.ProfileHeaderListener;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ProfileInfoFragment.OnFragmentInteractionListener} interface
+ * {@link ProfileHeaderListener} interface
  * to handle interaction events.
  * Use the {@link ProfileInfoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProfileInfoFragment extends Fragment {
+public class ProfileInfoFragment extends android.support.v4.app.Fragment {
 
 
     // TODO: add button interaction and more attributes
@@ -32,7 +33,7 @@ public class ProfileInfoFragment extends Fragment {
     @BindView(R.id.profile_image)
     CircleImageView profile_image;
 
-    private OnFragmentInteractionListener mListener;
+    private ProfileHeaderListener mListener;
 
     public ProfileInfoFragment() {
         // Required empty public constructor
@@ -56,11 +57,21 @@ public class ProfileInfoFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // for testing purposes -> to display one or another picture on start
         Random rnd = new Random();
-        boolean aorb = rnd.nextBoolean();
-        if(aorb){
-            this.profile_image.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.picture_dummy_a));
-        }else{
-            this.profile_image.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.picture_dummy_b));
+        // the random picture flag
+        boolean pictureRnd = rnd.nextBoolean();
+        try {
+            if (pictureRnd) {
+                // displays picture a
+                this.profile_image.setImageBitmap(BitmapFactory.decodeResource(this.getResources(),
+                        R.drawable.picture_dummy_a));
+            } else {
+                // displays picture b
+                this.profile_image.setImageBitmap(BitmapFactory.decodeResource(this.getResources(),
+                        R.drawable.picture_dummy_b));
+            }
+        }catch (Exception e){
+            System.out.println("Having problems getting the bitmap: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -71,21 +82,21 @@ public class ProfileInfoFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_profile_info, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
+    // doesn't need to be here actually yet
+    //    public void onButtonPressed(Uri uri) {
+//        if (mListener != null) {
+//            mListener.onFragmentInteraction(uri);
+//        }
+//    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof ProfileHeaderListener) {
+            mListener = (ProfileHeaderListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement the profile header listener");
         }
     }
 
@@ -93,20 +104,5 @@ public class ProfileInfoFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 }

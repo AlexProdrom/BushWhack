@@ -85,7 +85,7 @@ public class SignInFragment extends android.support.v4.app.Fragment {
             listenerContext = (OnAuthorizationScreenSwitchListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement the sign in interface");
         }
     }
 
