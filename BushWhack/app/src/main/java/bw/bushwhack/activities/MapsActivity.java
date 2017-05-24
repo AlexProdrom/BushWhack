@@ -2,6 +2,7 @@ package bw.bushwhack.activities;
 
 import bw.bushwhack.R;
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -11,6 +12,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -78,10 +84,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener(){
             @Override
             public void onMapLongClick(LatLng latLng) {
-                MarkerOptions options = new MarkerOptions();
-                options.position(latLng);
-                options.title("new");
-                mMap.addMarker(options);
+                final LatLng mLatLng = latLng;
+
+                //Get fragment for adding new marker
+                View mView = getLayoutInflater().inflate(R.layout.fragment_new_marker, null);
+                final EditText mMarkerName = (EditText) mView.findViewById(R.id.editTextMarkerName);
+                final Spinner mSpinner = (Spinner) mView.findViewById(R.id.spinnerMarkerType);
+
+                //Get arraylist from strings.xml and assign it to spinner for marker types
+                ArrayAdapter<String> mAdapter = new ArrayAdapter<String>(MapsActivity.this,
+                        android.R.layout.simple_spinner_dropdown_item,
+                        getResources().getStringArray(R.array.markerTypes));
+                mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                mSpinner.setAdapter(mAdapter);
+
+                //Create alert dialog
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapsActivity.this);
+                mBuilder.setTitle("Fill in marker details");
+                mBuilder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        MarkerOptions options = new MarkerOptions();
+                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                        options.position(mLatLng);
+                        options.title(mMarkerName.getText().toString() +" "+ mSpinner.getSelectedItem().toString());
+                        mMap.addMarker(options);
+                    }
+                });
+
+                mBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                mBuilder.setView(mView);
+                final AlertDialog dialog = mBuilder.create();
+                dialog.show();
             }
         });
     }
