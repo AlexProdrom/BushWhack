@@ -1,17 +1,32 @@
 package bw.bushwhack.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import butterknife.BindView;
 import butterknife.OnClick;
 import bw.bushwhack.R;
+import bw.bushwhack.activities.LoginActivity;
+import bw.bushwhack.activities.ProfileActivity;
 import bw.bushwhack.interfaces.OnAuthorizationScreenSwitchListener;
+
+import static com.google.android.gms.internal.zzt.TAG;
 
 // TODO: add the actual authorization functionality
 
@@ -24,10 +39,17 @@ import bw.bushwhack.interfaces.OnAuthorizationScreenSwitchListener;
  * create an instance of this fragment.
  */
 public class SignUpFragment extends android.support.v4.app.Fragment {
+
+    //Firebase authentification
+    private FirebaseAuth mAuth;
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "email";
 
-    private String email;
+    //Inputs in order to create account
+    @BindView(R.id.input_name) TextView name;
+    @BindView(R.id.input_email) TextView email;
+    @BindView(R.id.input_password) TextView password;
 
     private OnAuthorizationScreenSwitchListener listenerContext;
 
@@ -39,9 +61,47 @@ public class SignUpFragment extends android.support.v4.app.Fragment {
     @OnClick(R.id.link_login)
     public void onGoToSignIn() {
         if (listenerContext != null) {
-            SignInFragment signInFragment = SignInFragment.newInstance(this.email);
+            SignInFragment signInFragment = SignInFragment.newInstance(this.email.getText().toString());
             listenerContext.onSwitchAuthFragment(signInFragment);
         }
+    }
+
+    //create a new account
+    @OnClick(R.id.btn_signup)
+    public void onSignUp() {
+        //create user
+        mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Toast.makeText(getActivity(), "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "createUserWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+                            UpdateUi();
+                        }
+                    }
+
+                });
+
+    }
+
+    void UpdateUi()
+    {
+        Intent mSwitch=new Intent(getActivity(),ProfileActivity.class);
+        startActivity(mSwitch);
+        getActivity().finish();
     }
 
     /**
@@ -62,10 +122,10 @@ public class SignUpFragment extends android.support.v4.app.Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        // could be useful to pass the email between the fragments
+        mAuth=FirebaseAuth.getInstance();
+
         if (getArguments() != null) {
-            email = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
+            email.setText(getArguments().getString(ARG_PARAM1));
         }
     }
 
@@ -92,16 +152,4 @@ public class SignUpFragment extends android.support.v4.app.Fragment {
         super.onDetach();
         listenerContext = null;
     }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-
 }

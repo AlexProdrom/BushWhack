@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "272154793359",
+    "firebase_url": "https://bushwhack-8c71d.firebaseio.com",
+    "project_id": "bushwhack-8c71d",
+    "storage_bucket": "bushwhack-8c71d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:272154793359:android:5aefb3d895af48b8",
+        "android_client_info": {
+          "package_name": "bw.bushwhack"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "272154793359-tourgf1r5fu88c8maah9og07iu7mtob6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "bw.bushwhack",
+            "certificate_hash": "9fca61f8cfaf59456400391ceca278efb57cc0e0"
+          }
+        },
+        {
+          "client_id": "272154793359-92nvl1unujp5vu1u7k9dn5ilek97tsfs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5FViDRRYfc4SL1mGvdayBhzWEriFasyo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "272154793359-92nvl1unujp5vu1u7k9dn5ilek97tsfs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
