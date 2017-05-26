@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import java.util.Random;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import bw.bushwhack.R;
 import bw.bushwhack.interfaces.ProfileHeaderListener;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -25,10 +27,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * create an instance of this fragment.
  */
 public class ProfileInfoFragment extends android.support.v4.app.Fragment {
-
-
-    // TODO: add button interaction and more attributes
-    // TODO: make actual interface subscription with the activity
 
     @BindView(R.id.profile_image)
     CircleImageView profile_image;
@@ -55,6 +53,9 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    private void displayRandomUser(){
         // for testing purposes -> to display one or another picture on start
         Random rnd = new Random();
         // the random picture flag
@@ -70,7 +71,7 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
                         R.drawable.picture_dummy_b));
             }
         }catch (Exception e){
-            System.out.println("Having problems getting the bitmap: " + e.getMessage());
+            Log.e("Bitmap error: ", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -79,7 +80,10 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile_info, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile_info, container, false);
+        ButterKnife.bind(this,view);
+        this.displayRandomUser();
+        return view;
     }
 
     // doesn't need to be here actually yet

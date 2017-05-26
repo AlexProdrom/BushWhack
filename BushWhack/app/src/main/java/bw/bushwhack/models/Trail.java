@@ -12,10 +12,11 @@ public class Trail {
     private Double mDistance;
     private Double mProgress;
 
-    public Trail(String name, Double distance, Double prog){
+    public Trail(String name, Double distance){
         this.mTrailName = name;
         this.mDistance = distance;
-        this.mProgress = prog;
+        // random progress...
+        this.mProgress = (new Random()).nextDouble()*100;
     }
 
     public String getName(){
@@ -36,7 +37,7 @@ public class Trail {
         ArrayList<Trail> trails = new ArrayList<Trail>();
         Random rnd = new Random();
         for(int i =0; i<numTrails; i++){
-            trails.add(new Trail("My Trail #"+i, (rnd.nextDouble())*20, 0.0));
+            trails.add(new Trail("My Trail #"+i, (rnd.nextDouble())*20));
         }
         return trails;
     }

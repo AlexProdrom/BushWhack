@@ -13,17 +13,17 @@
         android:background="@color/cardview_shadow_end_color">
 
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/cardview_light_background">
+        <!--<FrameLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="@color/cardview_light_background">-->
 
-            <Button
-                android:id="@+id/button_add_trail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Plan a new trail" />
-        </FrameLayout>
+            <!--<Button-->
+                <!--android:id="@+id/button_add_trail"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="Plan a new trail" />-->
+        <!--</FrameLayout>-->
 
 
         <android.support.v7.widget.RecyclerView
