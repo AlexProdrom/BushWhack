@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.Random;
 
 import butterknife.BindView;
@@ -29,6 +31,7 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
 
     // TODO: add button interaction and more attributes
     // TODO: make actual interface subscription with the activity
+    private FirebaseAuth mAuth;
 
     @BindView(R.id.profile_image)
     CircleImageView profile_image;
