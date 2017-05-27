@@ -13,22 +13,18 @@ import bw.bushwhack.interfaces.OnAuthorizationScreenSwitchListener;
 
 public class LoginActivity extends AppCompatActivity implements OnAuthorizationScreenSwitchListener{
 
-    private FirebaseAuth mAuth;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-        //if getCurrentUser does not returns null
+        //if getCurrentUser does not returns null => already logged in
         if(mAuth.getCurrentUser() != null){
-            //that means user is already logged in
-            //so close this activity
             finish();
 
-            //and open profile activity
+            //open profile activity
             startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
         }
 
@@ -45,8 +41,7 @@ public class LoginActivity extends AppCompatActivity implements OnAuthorizationS
     }
 
     protected void setFragment(Fragment fr){
-        getFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, fr).commit();
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, fr).commit();
     }
 
     // implement the interface between the fragments and the activity
