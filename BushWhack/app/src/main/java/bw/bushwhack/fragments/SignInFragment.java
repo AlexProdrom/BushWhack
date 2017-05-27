@@ -4,10 +4,14 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 import bw.bushwhack.R;
 import bw.bushwhack.interfaces.OnAuthorizationScreenSwitchListener;
@@ -24,13 +28,13 @@ import bw.bushwhack.interfaces.OnAuthorizationScreenSwitchListener;
  */
 
 //
-public class SignInFragment extends android.support.v4.app.Fragment {
+public class SignInFragment extends Fragment implements View.OnClickListener {
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "email";
-
     private String email;
-
     private OnAuthorizationScreenSwitchListener listenerContext;
+    private TextView textViewSignin;
 
     public SignInFragment() {
         // Required empty public constructor
@@ -52,10 +56,10 @@ public class SignInFragment extends android.support.v4.app.Fragment {
         return fragment;
     }
 
-    // method to switch to the SignIn screen
-    // TODO: maybe would be worth making an interface for the auth screens?
+    // method to switch to the SignUp screen
     @OnClick(R.id.link_signup)
     public void onGoToSignUp() {
+
         if (listenerContext != null) {
             SignUpFragment signUpFragment = SignUpFragment.newInstance(this.email);
             listenerContext.onSwitchAuthFragment(signUpFragment);
@@ -65,17 +69,23 @@ public class SignInFragment extends android.support.v4.app.Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        // could be useful to pass the email between the fragments
+        // could be useful to pass the email between the fragments
         if (getArguments() != null) {
             email = getArguments().getString(ARG_PARAM1);
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sign_in, container, false);
+        View v= inflater.inflate(R.layout.fragment_sign_in, container, false);
+        //Butterknife configuration
+        ButterKnife.bind(this,v);
+        textViewSignin=(TextView)v.findViewById(R.id.link_signup);
+        textViewSignin.setOnClickListener(this);
+        return v;
     }
 
     @Override
@@ -93,5 +103,14 @@ public class SignInFragment extends android.support.v4.app.Fragment {
     public void onDetach() {
         super.onDetach();
         listenerContext = null;
+    }
+
+    @Override
+    public void onClick(View v) {
+        Log.d(getActivity().toString(),"does the link work?");
+        if (listenerContext != null) {
+            SignUpFragment signUpFragment = SignUpFragment.newInstance(this.email);
+            listenerContext.onSwitchAuthFragment(signUpFragment);
+        }
     }
 }

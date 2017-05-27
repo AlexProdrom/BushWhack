@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 import bw.bushwhack.R;
 import bw.bushwhack.activities.LoginActivity;
@@ -38,7 +39,7 @@ import static com.google.android.gms.internal.zzt.TAG;
  * Use the {@link SignUpFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SignUpFragment extends android.support.v4.app.Fragment {
+public class SignUpFragment extends Fragment {
 
     //Firebase authentification
     private FirebaseAuth mAuth;
@@ -89,7 +90,7 @@ public class SignUpFragment extends android.support.v4.app.Fragment {
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
-                            UpdateUi();
+
                         }
                     }
 
@@ -97,12 +98,7 @@ public class SignUpFragment extends android.support.v4.app.Fragment {
 
     }
 
-    void UpdateUi()
-    {
-        Intent mSwitch=new Intent(getActivity(),ProfileActivity.class);
-        startActivity(mSwitch);
-        getActivity().finish();
-    }
+
 
     /**
      * Use this factory method to create a new instance of
@@ -133,7 +129,10 @@ public class SignUpFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sign_up, container, false);
+        View v=inflater.inflate(R.layout.fragment_sign_up, container, false);
+        //Butterknife configuration
+        ButterKnife.bind(this,v);
+        return v;
     }
 
     @Override

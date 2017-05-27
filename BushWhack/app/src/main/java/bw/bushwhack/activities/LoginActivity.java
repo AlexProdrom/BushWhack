@@ -1,18 +1,36 @@
 package bw.bushwhack.activities;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.google.firebase.auth.FirebaseAuth;
+
 import bw.bushwhack.R;
 import bw.bushwhack.fragments.SignInFragment;
 import bw.bushwhack.interfaces.OnAuthorizationScreenSwitchListener;
 
 public class LoginActivity extends AppCompatActivity implements OnAuthorizationScreenSwitchListener{
 
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        mAuth = FirebaseAuth.getInstance();
+
+        //if getCurrentUser does not returns null
+        if(mAuth.getCurrentUser() != null){
+            //that means user is already logged in
+            //so close this activity
+            finish();
+
+            //and open profile activity
+            startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+        }
 
         // check if the fragment container is present
         if(findViewById(R.id.fragment_container) != null){
@@ -26,14 +44,14 @@ public class LoginActivity extends AppCompatActivity implements OnAuthorizationS
         }
     }
 
-    protected void setFragment(android.support.v4.app.Fragment fr){
-        getSupportFragmentManager().beginTransaction()
+    protected void setFragment(Fragment fr){
+        getFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, fr).commit();
     }
 
     // implement the interface between the fragments and the activity
     @Override
-    public void onSwitchAuthFragment(android.support.v4.app.Fragment fragment) {
+    public void onSwitchAuthFragment(Fragment fragment) {
         this.setFragment(fragment);
     }
 }
