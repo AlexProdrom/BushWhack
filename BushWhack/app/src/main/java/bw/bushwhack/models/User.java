@@ -10,8 +10,18 @@ import java.util.HashMap;
 //Fields and code i think would be suitable for an user
 public class User {
     private Location mCurrentLocation;
-
     public HashMap<String, Trail> trails;
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
 
     public Location getCurrentLocation() {
         return mCurrentLocation;
@@ -21,7 +31,8 @@ public class User {
         this.mCurrentLocation = currentLocation;
     }
 
-    public User(String name,Date birthday) {
+    public User(String name) {
+        this.name=name;
         this.trails=new HashMap<>();
     }
 }

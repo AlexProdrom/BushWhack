@@ -77,7 +77,6 @@ public class SignInFragment extends Fragment {
 
     @OnClick(R.id.btn_login)
     public void onSignIn() {
-
         String email_str = email.getText().toString().trim();
         String password_str = password.getText().toString().trim();
 

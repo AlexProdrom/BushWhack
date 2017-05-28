@@ -22,6 +22,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,6 +32,7 @@ import bw.bushwhack.R;
 import bw.bushwhack.activities.LoginActivity;
 import bw.bushwhack.activities.ProfileActivity;
 import bw.bushwhack.interfaces.OnAuthorizationScreenSwitchListener;
+import bw.bushwhack.models.User;
 
 import static com.google.android.gms.internal.zzt.TAG;
 
@@ -47,6 +50,7 @@ public class SignUpFragment extends Fragment {
 
     //Firebase authentication
     private FirebaseAuth mAuth;
+    private DatabaseReference mRef;
     private OnAuthorizationScreenSwitchListener listenerContext;
     private ProgressDialog progressDialog;
 
@@ -109,6 +113,10 @@ public class SignUpFragment extends Fragment {
 
                         } else {
                             Log.d(TAG, "createUserWithEmail:success");
+                            FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
+                            User userData=new User(name_str);
+                            mRef.child("users").child(user.getUid()).setValue(userData);
+
                             getActivity().finish();
                             startActivity(new Intent(getActivity(), ProfileActivity.class));
                         }
@@ -145,6 +153,7 @@ public class SignUpFragment extends Fragment {
         ButterKnife.bind(this,v);
 
         mAuth=FirebaseAuth.getInstance();
+        mRef= FirebaseDatabase.getInstance().getReference();
         progressDialog=new ProgressDialog(getActivity());
 
         if (getArguments() != null) {

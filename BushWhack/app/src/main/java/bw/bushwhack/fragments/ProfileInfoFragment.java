@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Random;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import bw.bushwhack.R;
 import bw.bushwhack.interfaces.ProfileHeaderListener;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -36,11 +37,8 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
 
-    @BindView(R.id.text_name)
-    TextView name;
-
-    @BindView(R.id.input_email)
-    TextView email;
+    @BindView(R.id.text_nickname)
+    TextView nickname;
 
     @BindView(R.id.profile_image)
     CircleImageView profile_image;
@@ -85,17 +83,19 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
             System.out.println("Having problems getting the bitmap: " + e.getMessage());
             e.printStackTrace();
         }
-        mAuth=FirebaseAuth.getInstance();
-        mUser=mAuth.getCurrentUser();
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile_info, container, false);
+        View v=inflater.inflate(R.layout.fragment_profile_info, container, false);
+        //Butterknife configuration
+        ButterKnife.bind(this, v);
+
+        mAuth=FirebaseAuth.getInstance();
+        mUser=mAuth.getCurrentUser();
+        return v;
     }
 
     // doesn't need to be here actually yet
