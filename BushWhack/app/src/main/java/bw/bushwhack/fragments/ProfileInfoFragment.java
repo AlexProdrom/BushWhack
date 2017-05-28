@@ -8,8 +8,10 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Random;
 
@@ -32,6 +34,13 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
     // TODO: add button interaction and more attributes
     // TODO: make actual interface subscription with the activity
     private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
+
+    @BindView(R.id.text_name)
+    TextView name;
+
+    @BindView(R.id.input_email)
+    TextView email;
 
     @BindView(R.id.profile_image)
     CircleImageView profile_image;
@@ -76,6 +85,10 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
             System.out.println("Having problems getting the bitmap: " + e.getMessage());
             e.printStackTrace();
         }
+        mAuth=FirebaseAuth.getInstance();
+        mUser=mAuth.getCurrentUser();
+
+
     }
 
     @Override
