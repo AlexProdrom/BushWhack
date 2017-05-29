@@ -9,6 +9,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Random;
 
@@ -27,6 +31,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * create an instance of this fragment.
  */
 public class ProfileInfoFragment extends android.support.v4.app.Fragment {
+
+
+    // TODO: add button interaction and more attributes
+    // TODO: make actual interface subscription with the activity
+    private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
+
+    @BindView(R.id.text_nickname)
+    TextView nickname;
 
     @BindView(R.id.profile_image)
     CircleImageView profile_image;
@@ -80,10 +93,19 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_profile_info, container, false);
-        ButterKnife.bind(this,view);
-        this.displayRandomUser();
-        return view;
+
+        // View view = inflater.inflate(R.layout.fragment_profile_info, container, false);
+        // ButterKnife.bind(this,view);
+        // this.displayRandomUser();
+        // return view;
+
+        View v=inflater.inflate(R.layout.fragment_profile_info, container, false);
+        //Butterknife configuration
+        ButterKnife.bind(this, v);
+
+        mAuth=FirebaseAuth.getInstance();
+        mUser=mAuth.getCurrentUser();
+        return v;
     }
 
     // doesn't need to be here actually yet

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.google.firebase.auth.FirebaseAuth;
 import bw.bushwhack.R;
 import bw.bushwhack.fragments.ProfileInfoFragment;
 import bw.bushwhack.fragments.ProfileTrailListFragment;
@@ -25,10 +27,13 @@ public class ProfileActivity extends AppCompatActivity implements ProfileHeaderL
     @BindView(R.id.profile_bottom_navigation)
     BottomNavigationView mBottomNavigation;
 
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
 
         ButterKnife.bind(this);
         final Context context = this;
@@ -54,6 +59,14 @@ public class ProfileActivity extends AppCompatActivity implements ProfileHeaderL
                 }
         );
 
+        mAuth = FirebaseAuth.getInstance();
+
+        if(mAuth.getCurrentUser() == null){
+            finish();
+
+            //starting login activity
+            startActivity(new Intent(this, LoginActivity.class));
+        }
 
         // set the profile header fragment:
         Fragment frProfileTab = new ProfileInfoFragment();
