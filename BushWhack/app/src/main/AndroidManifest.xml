@@ -27,7 +27,7 @@
             android:parentActivityName = ".activities.ProfileActivity" />
         <activity
             android:name=".activities.ProfileActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activities.LoginActivity">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
