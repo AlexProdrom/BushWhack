@@ -62,8 +62,6 @@ public class ProfileActivity extends AppCompatActivity implements ProfileHeaderL
         mAuth = FirebaseAuth.getInstance();
 
         if(mAuth.getCurrentUser() == null){
-            finish();
-
             //starting login activity
             startActivity(new Intent(this, LoginActivity.class));
         }

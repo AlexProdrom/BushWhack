@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Random;
 
@@ -37,6 +39,7 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
     // TODO: make actual interface subscription with the activity
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
+    private FirebaseDatabase mData;
 
     @BindView(R.id.text_nickname)
     TextView nickname;
@@ -105,6 +108,10 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
 
         mAuth=FirebaseAuth.getInstance();
         mUser=mAuth.getCurrentUser();
+
+        mData= FirebaseDatabase.getInstance();
+        DatabaseReference ref1=mData.getReference(mUser.getUid()).child("name");
+
         return v;
     }
 

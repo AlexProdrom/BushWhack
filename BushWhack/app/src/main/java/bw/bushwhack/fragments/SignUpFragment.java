@@ -117,7 +117,6 @@ public class SignUpFragment extends Fragment {
                             User userData=new User(name_str);
                             mRef.child("users").child(user.getUid()).setValue(userData);
 
-                            getActivity().finish();
                             startActivity(new Intent(getActivity(), ProfileActivity.class));
                         }
                         progressDialog.dismiss();
