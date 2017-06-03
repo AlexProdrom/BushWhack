@@ -43,7 +43,16 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".activities.SettingsActivity"></activity>
+        <!-- the settings activity is to be used to edit user data -->
+        <activity android:name=".activities.SettingsActivity" />
+        <!-- the map activity that is used when you set on a trail -->
+        <activity android:name=".activities.TrailActivity">
+            <!--<intent-filter>-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+
+                <!--<action android:name="android.intent.action.MAIN" />-->
+            <!--</intent-filter>-->
+        </activity>
     </application>
 
 </manifest>

@@ -23,4 +23,5 @@
         <item>Intermediate point</item>
         <item>Finish point</item>
     </string-array>
+    <string name="title_activity_trail">TrailActivity</string>
 </resources>
