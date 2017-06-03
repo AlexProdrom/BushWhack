@@ -1,5 +1,7 @@
 package bw.bushwhack.models;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 import java.util.Date;
 import java.util.HashMap;
 
@@ -7,7 +9,7 @@ import java.util.HashMap;
  * Created by prodromalex on 5/28/2017.
  */
 
-//Fields and code i think would be suitable for an user
+@IgnoreExtraProperties
 public class User {
     private Location mCurrentLocation;
     public HashMap<String, Trail> trails;
@@ -21,8 +23,6 @@ public class User {
         this.name = name;
     }
 
-
-
     public Location getCurrentLocation() {
         return mCurrentLocation;
     }
@@ -35,4 +35,6 @@ public class User {
         this.name=name;
         this.trails=new HashMap<>();
     }
+
+    public User(){}
 }

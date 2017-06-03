@@ -1,11 +1,13 @@
 package bw.bushwhack.models;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 import java.util.Date;
 
 /**
  * Created by prodromalex on 5/28/2017.
  */
-
+@IgnoreExtraProperties
 public class Dates {
     private Date startDate;
     private Date endDate;

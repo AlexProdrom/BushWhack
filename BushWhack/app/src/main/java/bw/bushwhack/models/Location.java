@@ -1,9 +1,11 @@
 package bw.bushwhack.models;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 /**
  * Created by prodromalex on 5/28/2017.
  */
-
+@IgnoreExtraProperties
 public class Location {
 
     private double lat;
