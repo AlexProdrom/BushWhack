@@ -12,6 +12,9 @@ public class Dates {
     private Date startDate;
     private Date endDate;
 
+    public Dates() {
+    }
+
     public Date getStartDate() {
         return startDate;
     }
@@ -27,6 +30,4 @@ public class Dates {
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
-
-    public Dates() {}
 }

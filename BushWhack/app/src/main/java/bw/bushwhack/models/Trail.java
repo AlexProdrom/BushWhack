@@ -1,5 +1,7 @@
 package bw.bushwhack.models;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -12,16 +14,17 @@ import bw.bushwhack.enums.StatusEnum;
 
 public class Trail {
     private Dates mDate;
-    public HashMap<String,Marker> mMarkers;
-    private int mStatus;
+    private StatusEnum mStatus;
     private double mTotalDistance;
+    public HashMap<String, Marker> mMarkers;
 
-    public Trail(){}
+    public Trail() {
+    }
 
-    public Trail(Dates date,StatusEnum status, double totalDistance) {
+    public Trail(Dates date, StatusEnum status, double totalDistance) {
         this.mDate = date;
         this.mMarkers = new HashMap<>();
-        this.mStatus = status.getValue();
+        this.mStatus = status;
         this.mTotalDistance = totalDistance;
     }
 
@@ -33,12 +36,17 @@ public class Trail {
         this.mDate = Date;
     }
 
-    public int getStatus() {
+    @Exclude
+    public StatusEnum getStatusVal() {
         return mStatus;
     }
 
-    public void setStatus(StatusEnum Status) {
-        this.mStatus = Status.getValue();
+    public int getStatus() {
+        return mStatus.getValue();
+    }
+
+    public void setStatus(int status) {
+        this.mStatus = StatusEnum.values()[status];
     }
 
     public double getTotalDistance() {
@@ -49,38 +57,38 @@ public class Trail {
         this.mTotalDistance = TotalDistance;
     }
 
-	// trail model code for the recycler
-	// TODO: clean up the code and integrate
-	private String mTrailName;
+    // trail model code for the recycler
+    // TODO: clean up the code and integrate
+    private String mTrailName;
     private Double mProgress;
 
-    public Trail(String name, Double distance){
+    public Trail(String name, Double distance) {
         this.mTrailName = name;
-		// change later
+        // change later
         this.mTotalDistance = distance;
         // random progress...
-        this.mProgress = (new Random()).nextDouble()*100;
+        this.mProgress = (new Random()).nextDouble() * 100;
     }
 
-    public String getName(){
+    public String getName() {
         return this.mTrailName;
     }
 
-    public Double getDistance(){
+    public Double getDistance() {
         return this.mTotalDistance;
     }
 
-    public Double getmProgress(){
+    public Double getmProgress() {
         return this.mProgress;
     }
 
     // for the dummy data:
     // to be replaced with the actual method to retrieve data from the Firebase stuff
-    public static ArrayList<Trail> createTrailList(int numTrails){
+    public static ArrayList<Trail> createTrailList(int numTrails) {
         ArrayList<Trail> trails = new ArrayList<Trail>();
         Random rnd = new Random();
-        for(int i =0; i<numTrails; i++){
-            trails.add(new Trail("My Trail #"+i, (rnd.nextDouble())*20));
+        for (int i = 0; i < numTrails; i++) {
+            trails.add(new Trail("My Trail #" + i, (rnd.nextDouble()) * 20));
         }
         return trails;
     }

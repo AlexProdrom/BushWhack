@@ -26,14 +26,13 @@ public class DataModel {
     private FirebaseDatabase mDatabase;
 
     public DataModel() {
-        mAuth=FirebaseAuth.getInstance();
-        mUser=mAuth.getCurrentUser();
-        mDatabase= FirebaseDatabase.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
+        mDatabase = FirebaseDatabase.getInstance();
     }
 
-    public void setCurrentUserRef()
-    {
-        DatabaseReference ref=mDatabase.getReference().child("users").child(mUser.getUid());
+    public void setCurrentUserRef() {
+        DatabaseReference ref = mDatabase.getReference().child("users").child(mUser.getUid());
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -49,9 +48,8 @@ public class DataModel {
         });
     }
 
-    public void setOtherUsersRef()
-    {
-        DatabaseReference ref=mDatabase.getReference().child("users");
+    public void setOtherUsersRef() {
+        DatabaseReference ref = mDatabase.getReference().child("users");
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override

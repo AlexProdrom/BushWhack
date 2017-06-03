@@ -1,5 +1,6 @@
 package bw.bushwhack.models;
 
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import bw.bushwhack.enums.MarkerTypeEnum;
@@ -10,13 +11,14 @@ import bw.bushwhack.enums.MarkerTypeEnum;
 @IgnoreExtraProperties
 public class Marker {
     private Location mLocation;
-    private int mType;
+    private MarkerTypeEnum mType;
 
-    public Marker(){}
+    public Marker() {
+    }
 
     public Marker(Location location, MarkerTypeEnum type) {
         this.mLocation = location;
-        this.mType = type.getValue();
+        this.mType = type;
     }
 
     public Location getLocation() {
@@ -27,11 +29,16 @@ public class Marker {
         this.mLocation = location;
     }
 
-    public int getType() {
+    @Exclude
+    public MarkerTypeEnum getTypeVal() {
         return mType;
     }
 
-    public void setType(MarkerTypeEnum type) {
-        this.mType = type.getValue();
+    public int getType() {
+        return mType.getValue();
+    }
+
+    public void setType(int type) {
+        this.mType = MarkerTypeEnum.values()[type];
     }
 }

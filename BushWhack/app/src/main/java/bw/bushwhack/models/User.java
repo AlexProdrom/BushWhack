@@ -15,6 +15,14 @@ public class User {
     public HashMap<String, Trail> trails;
     private String name;
 
+    public User() {
+    }
+
+    public User(String name) {
+        this.name = name;
+        this.trails = new HashMap<>();
+    }
+
     public String getName() {
         return name;
     }
@@ -30,11 +38,4 @@ public class User {
     public void setCurrentLocation(Location currentLocation) {
         this.mCurrentLocation = currentLocation;
     }
-
-    public User(String name) {
-        this.name=name;
-        this.trails=new HashMap<>();
-    }
-
-    public User(){}
 }
