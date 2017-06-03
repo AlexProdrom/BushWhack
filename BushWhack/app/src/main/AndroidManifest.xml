@@ -28,11 +28,11 @@
             android:name=".activities.ProfileActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activities.LoginActivity">
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
+            <!--<intent-filter>-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
 
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
+                <!--<action android:name="android.intent.action.MAIN" />-->
+            <!--</intent-filter>-->
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -47,11 +47,11 @@
         <activity android:name=".activities.SettingsActivity" />
         <!-- the map activity that is used when you set on a trail -->
         <activity android:name=".activities.TrailActivity">
-            <!--<intent-filter>-->
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
 
-                <!--<action android:name="android.intent.action.MAIN" />-->
-            <!--</intent-filter>-->
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
         </activity>
     </application>
 

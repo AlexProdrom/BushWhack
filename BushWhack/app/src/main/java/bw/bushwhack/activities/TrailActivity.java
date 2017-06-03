@@ -37,7 +37,8 @@ public class TrailActivity extends AppCompatActivity
     private GoogleMap mTrailMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-
+    private Location mLastKnownLocation;
+    private final int DEFAULT_ZOOM = 15;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +52,7 @@ public class TrailActivity extends AppCompatActivity
 
     public void changeCameraLocation(LatLng latLng) {
         mTrailMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mTrailMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        mTrailMap.animateCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM));
     }
 
     // TODO: could maybe be moved to a separate class/object?
@@ -71,6 +72,18 @@ public class TrailActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mTrailMap = googleMap;
+        // add the listener of the onMyLocationButtonClick()
+        mTrailMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                boolean permissionGranted = checkLocationPermission();
+                // maybe there will be too many unnecessary checks
+                if(permissionGranted){
+                    getDeviceLocation();
+                }
+                return permissionGranted;
+            }
+        });
         // TODO: dispatch the markers on the map here
         // TODO: I remember the discussion whether we need to change it
         mTrailMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
@@ -84,6 +97,34 @@ public class TrailActivity extends AppCompatActivity
         } else {
             buildGoogleApiClient();
             mTrailMap.setMyLocationEnabled(true);
+        }
+
+        //  query to check if permissions are enabled
+        this.checkLocationPermission();
+    }
+
+    private void getDeviceLocation() {
+    /*
+     * Before getting the device location, you must check location
+     * permission, as described earlier in the tutorial. Then:
+     * Get the best and most recent location of the device, which may be
+     * null in rare cases when a location is not available.
+     */
+        if (this.checkLocationPermission()) {
+            mLastKnownLocation = LocationServices.FusedLocationApi
+                    .getLastLocation(mGoogleApiClient);
+        }
+
+        // Set the map's camera position to the current location of the device.
+        if (mLastKnownLocation != null) {
+            mTrailMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(mLastKnownLocation.getLatitude(),
+                            mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+        } else {
+            Log.d("No current location", "Current location is null. Using defaults.");
+//            couldn't get location - proposed solution
+//            mTrailMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+//            mTrailMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
     }
 
@@ -157,6 +198,8 @@ public class TrailActivity extends AppCompatActivity
         }
     }
 
+
+
     // I do not know what I am doing here
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -175,6 +218,7 @@ public class TrailActivity extends AppCompatActivity
                         if (mGoogleApiClient == null) {
                             buildGoogleApiClient();
                         }
+                        // should set the location to be enabled
                         mTrailMap.setMyLocationEnabled(true);
                     }
 
