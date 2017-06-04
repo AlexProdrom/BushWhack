@@ -12,11 +12,10 @@ import java.util.HashMap;
 @IgnoreExtraProperties
 public class User {
     private Location mCurrentLocation;
-    public HashMap<String, Trail> trails;
     private String name;
+    public HashMap<String, Trail> trails;
 
-    public User() {
-    }
+    public User() {}
 
     public User(String name) {
         this.name = name;

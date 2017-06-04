@@ -13,8 +13,7 @@ public class Marker {
     private Location mLocation;
     private MarkerTypeEnum mType;
 
-    public Marker() {
-    }
+    public Marker() {}
 
     public Marker(Location location, MarkerTypeEnum type) {
         this.mLocation = location;

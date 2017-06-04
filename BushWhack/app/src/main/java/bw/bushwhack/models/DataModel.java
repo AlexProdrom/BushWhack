@@ -69,4 +69,12 @@ public class DataModel {
             }
         });
     }
+
+    public void updateCurrentUser(User u)
+    {
+        if(u!=null) {
+            DatabaseReference ref = mDatabase.getReference().child("users").child(mUser.getUid());
+            ref.setValue(u);
+        }
+    }
 }

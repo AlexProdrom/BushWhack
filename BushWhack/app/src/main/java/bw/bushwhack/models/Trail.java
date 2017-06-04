@@ -18,8 +18,7 @@ public class Trail {
     private double mTotalDistance;
     public HashMap<String, Marker> mMarkers;
 
-    public Trail() {
-    }
+    public Trail() {}
 
     public Trail(Dates date, StatusEnum status, double totalDistance) {
         this.mDate = date;

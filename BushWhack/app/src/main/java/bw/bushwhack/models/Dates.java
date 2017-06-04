@@ -9,11 +9,11 @@ import java.util.Date;
  */
 @IgnoreExtraProperties
 public class Dates {
+    //Not sure if date format works so be saved in firebase, string is an alternative
     private Date startDate;
     private Date endDate;
 
-    public Dates() {
-    }
+    public Dates() {}
 
     public Date getStartDate() {
         return startDate;
