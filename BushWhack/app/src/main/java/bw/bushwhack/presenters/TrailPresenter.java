@@ -1,7 +1,9 @@
 package bw.bushwhack.presenters;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import bw.bushwhack.models.DataModel;
@@ -56,5 +58,23 @@ public class TrailPresenter {
         //A better location for this methods needs to be found as further on you can check users without a map
         mModel.setCurrentUserRef();
         mModel.setOtherUsersRef();
+    }
+
+    @Subscribe
+    public void RetrieveCurrentUser(User user)
+    {
+        //callback method called with data
+    }
+
+    @Subscribe
+    public void RetrieveOtherUsers(ArrayList<User> users)
+    {
+        //callback method called with data
+    }
+
+    @Subscribe
+    public void RetrieveError(Error error)
+    {
+        //callback method called with data
     }
 }
