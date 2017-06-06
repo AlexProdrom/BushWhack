@@ -6,6 +6,7 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
+import bw.bushwhack.interfaces.OnRetrievingDataListener;
 import bw.bushwhack.models.DataModel;
 import bw.bushwhack.models.Location;
 import bw.bushwhack.models.User;
@@ -32,6 +33,7 @@ public class TrailPresenter {
     private DataModel mModel;
     private CurrentTrailView mView;
     private EventBus mBus = EventBus.getDefault();
+    private OnRetrievingDataListener mDataCallback;
 
     private User mCurrentUser;
     private List<User> mUsers;
@@ -43,9 +45,8 @@ public class TrailPresenter {
         this.setDatabaseRefs();
     }
 
-    public boolean updateUserLocation(Location current)
-    {
-        if(current!=null) {
+    public boolean updateUserLocation(Location current) {
+        if (current != null) {
             this.mCurrentUser.setCurrentLocation(current);
             this.mModel.updateCurrentUser(mCurrentUser);
             return true;
@@ -53,28 +54,31 @@ public class TrailPresenter {
         return false;
     }
 
-    public void setDatabaseRefs()
+    public void setCallBack(OnRetrievingDataListener callback)
     {
-        //A better location for this methods needs to be found as further on you can check users without a map
+        mDataCallback=callback;
+    }
+
+    public void setDatabaseRefs() {
         mModel.setCurrentUserRef();
         mModel.setOtherUsersRef();
     }
 
     @Subscribe
-    public void RetrieveCurrentUser(User user)
-    {
-        //callback method called with data
+    public void RetrieveCurrentUser(User user) {
+        if (user != null)
+            mDataCallback.onCurrentUserRetrieved(user);
     }
 
     @Subscribe
-    public void RetrieveOtherUsers(ArrayList<User> users)
-    {
-        //callback method called with data
+    public void RetrieveOtherUsers(ArrayList<User> users) {
+        if (!users.isEmpty())
+            mDataCallback.onCurrentUsersRetrieved(users);
     }
 
     @Subscribe
-    public void RetrieveError(Error error)
-    {
-        //callback method called with data
+    public void RetrieveError(Error error) {
+        if(error!=null)
+            mDataCallback.onErrorOccurance(error);
     }
 }
