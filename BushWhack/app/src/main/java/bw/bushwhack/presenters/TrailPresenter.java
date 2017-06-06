@@ -56,7 +56,8 @@ public class TrailPresenter {
 
     public void setCallBack(OnRetrievingDataListener callback)
     {
-        mDataCallback=callback;
+        if(callback!=null)
+            mDataCallback=callback;
     }
 
     public void setDatabaseRefs() {
