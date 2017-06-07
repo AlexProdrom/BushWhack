@@ -3,6 +3,7 @@ package bw.bushwhack.activities;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -32,6 +34,7 @@ import bw.bushwhack.R;
 import bw.bushwhack.interfaces.OnRetrievingDataListener;
 import bw.bushwhack.models.User;
 import bw.bushwhack.presenters.TrailPresenter;
+import bw.bushwhack.utils.LocationUtil;
 
 import static bw.bushwhack.activities.MapsActivity.MY_PERMISSIONS_REQUEST_LOCATION;
 
@@ -46,6 +49,7 @@ public class TrailActivity extends AppCompatActivity
     private TrailPresenter mTrailPresenter;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+    private LocationManager mLocationManager;
     private Location mLastKnownLocation;
     private final int DEFAULT_ZOOM = 15;
 
@@ -89,6 +93,7 @@ public class TrailActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mTrailMap = googleMap;
+
         // add the listener of the onMyLocationButtonClick()
         mTrailMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
@@ -121,8 +126,13 @@ public class TrailActivity extends AppCompatActivity
         //  query to check if permissions are enabled
         this.checkLocationPermission();
         this.getDeviceLocation();
+        // TODO: explicitely move to the current location and write it to firebase
+        if (this.mTrailPresenter.getUsers() != null) {
+            this.onCurrentUsersRetrieved((ArrayList<User>) this.mTrailPresenter.getUsers());
+        }
     }
 
+    // TODO: fixed some stuff, but have to make sure the usage of the functions is not broken
     private void getDeviceLocation() {
     /*
      * Before getting the device location, you must check location
@@ -136,22 +146,31 @@ public class TrailActivity extends AppCompatActivity
         }
 
         // Set the map's camera position to the current location of the device.
-        if (mLastKnownLocation != null) {
-            mTrailMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(mLastKnownLocation.getLatitude(),
-                            mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-            // UPDATE ONLINE LOCATION
-            mTrailPresenter.updateUserLocation(
-                    new bw.bushwhack.models.Location(
-                            mLastKnownLocation.getLatitude(),
-                            mLastKnownLocation.getLongitude()
-                    )
-            );
-        } else {
+        if (mLastKnownLocation == null) {
+
             Log.d("No current location", "Current location is null. Using defaults.");
+            if (this.isGpsLocationProviderEnabled()) {
+                Location loc = this.mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                mLastKnownLocation = loc;
+            }
 //            couldn't get location - proposed solution
 //            mTrailMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
 //            mTrailMap.getUiSettings().setMyLocationButtonEnabled(false);
+        }
+
+        try {
+            mTrailMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(mLastKnownLocation.getLatitude(),
+                            mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+//            // UPDATE ONLINE LOCATION
+//            mTrailPresenter.updateUserLocation(
+//                    new bw.bushwhack.models.Location(
+//                            mLastKnownLocation.getLatitude(),
+//                            mLastKnownLocation.getLongitude()
+//                    )
+//            );
+        } catch (NullPointerException e) {
+            Log.e("LastKnownLocation fail", e.getMessage());
         }
     }
 
@@ -182,12 +201,13 @@ public class TrailActivity extends AppCompatActivity
 
         Log.i("location changed", "set to new location" + location.toString());
 
-//        mTrailPresenter.updateUserLocation(
-//                new bw.bushwhack.models.Location(
-//                        location.getLatitude(),
-//                        location.getLongitude()
-//                )
-//        );
+        // Update online location
+        mTrailPresenter.updateUserLocation(
+                new bw.bushwhack.models.Location(
+                        location.getLatitude(),
+                        location.getLongitude()
+                )
+        );
         LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
 
         // changes the camera location
@@ -232,6 +252,19 @@ public class TrailActivity extends AppCompatActivity
         }
     }
 
+    private boolean isGpsLocationProviderEnabled() {
+        if (mLocationManager == null) {
+            mLocationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+        }
+        try {
+            return mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch (Exception e) {
+            Log.d("GPS broke", e.getMessage());
+        }
+
+        return false;
+    }
+
 
     // I do not know what I am doing here
     @Override
@@ -272,23 +305,37 @@ public class TrailActivity extends AppCompatActivity
     // TODO: figure why it is not triggered every time on sttart up, but IS TRIGGERED ON EVERY current location button click
     @Override
     public void onCurrentUsersRetrieved(ArrayList<User> users) {
-
+        mTrailMap.clear();
 //        ArrayList<MarkerOptions> markers = new ArrayList<>();
         // show the list of the users
+        this.displayUsersMarkers(users);
+    }
+
+    protected void displayUsersMarkers(ArrayList<User> users) {
         for (User person : users) {
             if (person.getCurrentLocation() != null) {
 
                 // add the check for the email being different
-                if(person.getEmail() != mTrailPresenter.getmCurrentUser().getEmail()){
+                if (person.getEmail() != mTrailPresenter.getCurrentUser().getEmail()) {
 
                     // Toast.makeText(this, "Person has a location", Toast.LENGTH_SHORT).show();
                     LatLng personLocation = new LatLng(person.getCurrentLocation().getLat(), person.getCurrentLocation().getLng());
 
-                    mTrailMap.addMarker(new MarkerOptions().position(personLocation).title(person.getName().toString()));
+                    mTrailMap.addMarker(new MarkerOptions()
+                                    .position(personLocation)
+                                    .title(person.getName().toString())
+//                                    .snippet("From you: "
+//                                            + LocationUtil.CalculationByDistance(
+//                                            new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLatitude())
+//                                            , personLocation)
+//                                            + " m")
+                            //.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_person_black_24dp))
+                    );
                 }
             }
         }
     }
+
 
     @Override
     public void onErrorOccurance(Error error) {

@@ -32,8 +32,11 @@ public class TrailPresenter {
         return uniqueInstance;
     }
 
-    public User getmCurrentUser(){
+    public User getCurrentUser(){
         return mCurrentUser;
+    }
+    public List<User> getUsers(){
+        return mUsers;
     }
 
     private DataModel mModel;
@@ -90,5 +93,12 @@ public class TrailPresenter {
     public void RetrieveError(Error error) {
         if(error!=null)
             mDataCallback.onErrorOccurance(error);
+    }
+
+    /**
+     * Used to destroy the instance of the presenter
+     */
+    public void destroy(){
+        this.uniqueInstance = null;
     }
 }

@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/text_name"
-            android:text="Elliott Cullen"
+            android:text=""
             android:textAppearance="@android:style/TextAppearance.Material.Large"
             android:textAlignment="center"
             android:paddingTop="16dp"
@@ -35,7 +35,7 @@
             android:textColor="@color/white"/>
 
         <TextView
-            android:text="\@ellicullen89"
+            android:text=""
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/text_nickname"

@@ -67,6 +67,7 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
         return fragment;
     }
 
+    @Deprecated
     public static ProfileInfoFragment newInstance(User userData) {
         ProfileInfoFragment fragment = new ProfileInfoFragment();
         // add some logic

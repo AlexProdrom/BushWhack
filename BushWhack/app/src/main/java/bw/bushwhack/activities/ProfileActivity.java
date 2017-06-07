@@ -38,6 +38,9 @@ public class ProfileActivity extends AppCompatActivity implements
     private FirebaseAuth mAuth;
     // think about the naming...
     private TrailPresenter mPresenter;
+    private ProfileInfoFragment mProfileTab;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +67,8 @@ public class ProfileActivity extends AppCompatActivity implements
                             case R.id.action_settings:
                                 Toast.makeText(context,"Bye-bye bushwhack!", Toast.LENGTH_SHORT).show();
                                 mAuth.signOut();
+                                // to clear out the presenter reference and force reinitialization on new openning
+                                mPresenter.destroy();
                                 startActivity(new Intent(context, LoginActivity.class));
                                 break;
                         }
@@ -80,9 +85,10 @@ public class ProfileActivity extends AppCompatActivity implements
         }
 
         // set the profile header fragment:
-        Fragment frProfileTab = ProfileInfoFragment.newInstance(this.mPresenter.getmCurrentUser());
+        //Fragment frProfileTab = ProfileInfoFragment.newInstance(this.mPresenter.getmCurrentUser());
+        mProfileTab = ProfileInfoFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.profile_toolbar_fragment_frame, frProfileTab).commit();
+                .add(R.id.profile_toolbar_fragment_frame, mProfileTab).commit();
         // set the profile trails
         Fragment frProfileTrails = new ProfileTrailListFragment();
         getSupportFragmentManager().beginTransaction()
@@ -100,8 +106,10 @@ public class ProfileActivity extends AppCompatActivity implements
 
     @Override
     public void onCurrentUserRetrieved(User u) {
-
+        // works to set the profile name and email, but lags a bit
         Log.i("user in profile",u.toString());
+        mProfileTab.setProfileName(u.getName());
+        mProfileTab.setProfileEmail(u.getEmail());
     }
 
     @Override
