@@ -36,8 +36,6 @@ import bw.bushwhack.models.User;
 
 import static com.google.android.gms.internal.zzt.TAG;
 
-// TODO: add the actual authorization functionality
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -82,7 +80,7 @@ public class SignUpFragment extends Fragment {
     @OnClick(R.id.btn_signup)
     public void onSignUp() {
         final String name_str=name.getText().toString();
-        String email_str=email.getText().toString().trim();
+        final String email_str=email.getText().toString().trim();
         String password_str=password.getText().toString().trim();
 
         //Checking for inputs
@@ -114,7 +112,8 @@ public class SignUpFragment extends Fragment {
                         } else {
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
-                            User userData=new User(name_str);
+
+                            User userData=new User(name_str,email_str);
                             mRef.child("users").child(user.getUid()).setValue(userData);
 
                             startActivity(new Intent(getActivity(), ProfileActivity.class));

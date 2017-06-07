@@ -1,6 +1,7 @@
 package bw.bushwhack.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import bw.bushwhack.R;
+import bw.bushwhack.activities.TrailActivity;
 import bw.bushwhack.models.Trail;
 
 /**
@@ -100,7 +102,15 @@ public class TrailListAdapter extends RecyclerView.Adapter<TrailListAdapter.View
             //registering popup with OnMenuItemClickListener
             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 public boolean onMenuItemClick(MenuItem item) {
-                    Toast.makeText(context, "You chose for " + item.getTitle(), Toast.LENGTH_SHORT).show();
+                    String menuOption = item.getTitle().toString();
+                    switch (menuOption) {
+                        case "Start":
+                            context.startActivity(new Intent(context, TrailActivity.class));
+                            break;
+                        default:
+                            Toast.makeText(context, "You chose for " + item.getTitle(), Toast.LENGTH_SHORT).show();
+                            break;
+                    }
                     return true;
                 }
             });

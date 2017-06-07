@@ -1,5 +1,7 @@
 package bw.bushwhack.presenters;
 
+import android.util.Log;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -28,6 +30,10 @@ public class TrailPresenter {
             }
         }
         return uniqueInstance;
+    }
+
+    public User getmCurrentUser(){
+        return mCurrentUser;
     }
 
     private DataModel mModel;
@@ -67,14 +73,17 @@ public class TrailPresenter {
 
     @Subscribe
     public void RetrieveCurrentUser(User user) {
+        Log.i("user data",user.toString());
         if (user != null)
             mDataCallback.onCurrentUserRetrieved(user);
+            mCurrentUser = user;
     }
 
     @Subscribe
     public void RetrieveOtherUsers(ArrayList<User> users) {
         if (!users.isEmpty())
             mDataCallback.onCurrentUsersRetrieved(users);
+            mUsers = users;
     }
 
     @Subscribe

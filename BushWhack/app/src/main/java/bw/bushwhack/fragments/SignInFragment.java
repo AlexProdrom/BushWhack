@@ -29,7 +29,6 @@ import bw.bushwhack.R;
 import bw.bushwhack.activities.ProfileActivity;
 import bw.bushwhack.interfaces.OnAuthorizationScreenSwitchListener;
 
-// TODO: add the actual authorization functionality
 
 /**
  * A simple {@link Fragment} subclass.

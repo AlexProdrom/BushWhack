@@ -1,5 +1,6 @@
 package bw.bushwhack.models;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,6 +38,7 @@ public class DataModel {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.i("datasnap",dataSnapshot.toString());
                 User person = dataSnapshot.getValue(User.class);
                 mBus.post(person);
             }

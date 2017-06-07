@@ -16,12 +16,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.w3c.dom.Text;
+
 import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import bw.bushwhack.R;
 import bw.bushwhack.interfaces.ProfileHeaderListener;
+import bw.bushwhack.models.User;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
@@ -35,15 +38,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ProfileInfoFragment extends android.support.v4.app.Fragment {
 
 
-    // TODO: add button interaction and more attributes
-    // TODO: make actual interface subscription with the activity
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
     private FirebaseDatabase mData;
 
     @BindView(R.id.text_nickname)
     TextView nickname;
-
+    @BindView(R.id.text_name)
+    TextView profile_name;
     @BindView(R.id.profile_image)
     CircleImageView profile_image;
 
@@ -59,12 +61,33 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
      *
      * @return A new instance of fragment ProfileInfoFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static ProfileInfoFragment newInstance() {
         ProfileInfoFragment fragment = new ProfileInfoFragment();
         // add some logic
         return fragment;
     }
+
+    public static ProfileInfoFragment newInstance(User userData) {
+        ProfileInfoFragment fragment = new ProfileInfoFragment();
+        // add some logic
+        fragment.setProfileName(userData.getName());
+        fragment.setProfileEmail(userData.getEmail());
+        return fragment;
+    }
+
+    public void setProfileName(String name){
+        this.profile_name.setText(name);
+    }
+
+    public void setProfileEmail(String email){
+        this.nickname.setText(email);
+    }
+
+    // TODO: implement set ProfileImage
+//    public void setProfileImage(){
+//
+//    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

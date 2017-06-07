@@ -10,30 +10,42 @@ import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.ArrayList;
+
 import bw.bushwhack.R;
 import bw.bushwhack.fragments.ProfileInfoFragment;
 import bw.bushwhack.fragments.ProfileTrailListFragment;
+import bw.bushwhack.interfaces.OnRetrievingDataListener;
 import bw.bushwhack.interfaces.ProfileHeaderListener;
 import bw.bushwhack.interfaces.ProfileTrailListListener;
+import bw.bushwhack.models.User;
+import bw.bushwhack.presenters.TrailPresenter;
 
-public class ProfileActivity extends AppCompatActivity implements ProfileHeaderListener, ProfileTrailListListener {
+public class ProfileActivity extends AppCompatActivity implements
+        ProfileHeaderListener, ProfileTrailListListener, OnRetrievingDataListener {
 
     @BindView(R.id.profile_bottom_navigation)
     BottomNavigationView mBottomNavigation;
 
     private FirebaseAuth mAuth;
-
+    // think about the naming...
+    private TrailPresenter mPresenter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        // create it if it was not yet
+        mPresenter = TrailPresenter.getInstance();
+        mPresenter.setCallBack(this);
 
         ButterKnife.bind(this);
         final Context context = this;
@@ -43,7 +55,6 @@ public class ProfileActivity extends AppCompatActivity implements ProfileHeaderL
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
-                            // TODO: make the logical flow of the activities and fragments more manageable
                             case R.id.action_profile:
                                 Toast.makeText(context,"Opens the profile fragment", Toast.LENGTH_SHORT).show();
                                 break;
@@ -51,7 +62,9 @@ public class ProfileActivity extends AppCompatActivity implements ProfileHeaderL
                                 onAddTrail();
                                 break;
                             case R.id.action_settings:
-                                Toast.makeText(context,"Opens the settings fragment", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context,"Bye-bye bushwhack!", Toast.LENGTH_SHORT).show();
+                                mAuth.signOut();
+                                startActivity(new Intent(context, LoginActivity.class));
                                 break;
                         }
                         return false;
@@ -67,7 +80,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileHeaderL
         }
 
         // set the profile header fragment:
-        Fragment frProfileTab = new ProfileInfoFragment();
+        Fragment frProfileTab = ProfileInfoFragment.newInstance(this.mPresenter.getmCurrentUser());
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.profile_toolbar_fragment_frame, frProfileTab).commit();
         // set the profile trails
@@ -83,5 +96,23 @@ public class ProfileActivity extends AppCompatActivity implements ProfileHeaderL
         Intent myIntent = new Intent(this,
                 MapsActivity.class);
         startActivity(myIntent);
+    }
+
+    @Override
+    public void onCurrentUserRetrieved(User u) {
+
+        Log.i("user in profile",u.toString());
+    }
+
+    @Override
+    public void onCurrentUsersRetrieved(ArrayList<User> users) {
+
+        Log.i("user in profile",users.toString());
+    }
+
+    @Override
+    public void onErrorOccurance(Error error) {
+
+        Log.i("user in profile",error.toString());
     }
 }

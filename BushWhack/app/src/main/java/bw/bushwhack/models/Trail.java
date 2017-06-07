@@ -66,7 +66,8 @@ public class Trail {
         // change later
         this.mTotalDistance = distance;
         // random progress...
-        this.mProgress = (new Random()).nextDouble() * 100;
+//        this.mProgress = (new Random()).nextDouble() * 100;
+        this.mProgress = 0.0;
     }
 
     public String getName() {
@@ -86,9 +87,9 @@ public class Trail {
     public static ArrayList<Trail> createTrailList(int numTrails) {
         ArrayList<Trail> trails = new ArrayList<Trail>();
         Random rnd = new Random();
-        for (int i = 0; i < numTrails; i++) {
-            trails.add(new Trail("My Trail #" + i, (rnd.nextDouble()) * 20));
-        }
+//        for (int i = 0; i < numTrails; i++) {
+        trails.add(new Trail("My Trail #1", (rnd.nextDouble()) * 20));
+//        }
         return trails;
     }
 
