@@ -22,6 +22,9 @@ public class LocationUtil {
      * @return meters
      */
     static public double CalculationByDistance(LatLng StartP, LatLng EndP) {
+
+
+
         int Radius = 6371;// radius of earth in Km
         double lat1 = StartP.latitude;
         double lat2 = EndP.latitude;

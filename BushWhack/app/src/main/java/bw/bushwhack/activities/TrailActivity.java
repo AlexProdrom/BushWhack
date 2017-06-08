@@ -321,14 +321,28 @@ public class TrailActivity extends AppCompatActivity
                     // Toast.makeText(this, "Person has a location", Toast.LENGTH_SHORT).show();
                     LatLng personLocation = new LatLng(person.getCurrentLocation().getLat(), person.getCurrentLocation().getLng());
 
+                    Location personLoc = new Location("");
+                    personLoc.setLongitude(personLocation.longitude);
+                    personLoc.setLatitude(personLocation.latitude);
+
+                    float totalDistance = personLoc.distanceTo(mLastKnownLocation);
+                    Double kmDistance = Math.floor(totalDistance / 1000);
+                    Double mDistance = Math.floor(totalDistance % 1000);
+
                     mTrailMap.addMarker(new MarkerOptions()
                                     .position(personLocation)
                                     .title(person.getName().toString())
-//                                    .snippet("From you: "
-//                                            + LocationUtil.CalculationByDistance(
+                                    .snippet("From you: "
+                                            +
+                                            kmDistance.intValue()
+                                            +
+                                            " km "
+                                            +
+                                            mDistance.intValue()
+//                                            LocationUtil.CalculationByDistance(
 //                                            new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLatitude())
 //                                            , personLocation)
-//                                            + " m")
+                                            + " m")
                             //.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_person_black_24dp))
                     );
                 }
