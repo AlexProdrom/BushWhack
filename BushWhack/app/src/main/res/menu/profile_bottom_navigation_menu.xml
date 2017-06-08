@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_profile"
+        android:enabled="true"
+        android:icon="@drawable/ic_person_black_24dp"
+        android:title="Profile"
+        app:showAsAction="ifRoom" />
+    <!-- TODO: think if we should change this option to start current trail rather than create new -->
+    <!-- we can add a separate button for creating new trails -->
+    <item
+        android:id="@+id/action_new_trail"
+        android:enabled="true"
+        android:icon="@drawable/ic_near_me_black_24dp"
+        android:title="New Trail"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_settings"
+        android:enabled="true"
+        android:icon="@drawable/ic_airline_seat_individual_suite_black_24dp"
+        android:title="Quit"
+        app:showAsAction="ifRoom" />
+</menu>

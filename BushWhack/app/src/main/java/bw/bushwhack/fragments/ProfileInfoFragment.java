@@ -5,15 +5,26 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import org.w3c.dom.Text;
 
 import java.util.Random;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import bw.bushwhack.R;
 import bw.bushwhack.interfaces.ProfileHeaderListener;
+import bw.bushwhack.models.User;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
@@ -27,9 +38,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ProfileInfoFragment extends android.support.v4.app.Fragment {
 
 
-    // TODO: add button interaction and more attributes
-    // TODO: make actual interface subscription with the activity
+    private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
+    private FirebaseDatabase mData;
 
+    @BindView(R.id.text_nickname)
+    TextView nickname;
+    @BindView(R.id.text_name)
+    TextView profile_name;
     @BindView(R.id.profile_image)
     CircleImageView profile_image;
 
@@ -45,16 +61,41 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
      *
      * @return A new instance of fragment ProfileInfoFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static ProfileInfoFragment newInstance() {
         ProfileInfoFragment fragment = new ProfileInfoFragment();
         // add some logic
         return fragment;
     }
 
+    @Deprecated
+    public static ProfileInfoFragment newInstance(User userData) {
+        ProfileInfoFragment fragment = new ProfileInfoFragment();
+        // add some logic
+        fragment.setProfileName(userData.getName());
+        fragment.setProfileEmail(userData.getEmail());
+        return fragment;
+    }
+
+    public void setProfileName(String name){
+        this.profile_name.setText(name);
+    }
+
+    public void setProfileEmail(String email){
+        this.nickname.setText(email);
+    }
+
+    // TODO: implement set ProfileImage
+//    public void setProfileImage(){
+//
+//    }
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    private void displayRandomUser(){
         // for testing purposes -> to display one or another picture on start
         Random rnd = new Random();
         // the random picture flag
@@ -70,7 +111,7 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
                         R.drawable.picture_dummy_b));
             }
         }catch (Exception e){
-            System.out.println("Having problems getting the bitmap: " + e.getMessage());
+            Log.e("Bitmap error: ", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -79,7 +120,23 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile_info, container, false);
+
+        // View view = inflater.inflate(R.layout.fragment_profile_info, container, false);
+        // ButterKnife.bind(this,view);
+        // this.displayRandomUser();
+        // return view;
+
+        View v=inflater.inflate(R.layout.fragment_profile_info, container, false);
+        //Butterknife configuration
+        ButterKnife.bind(this, v);
+
+        mAuth=FirebaseAuth.getInstance();
+        mUser=mAuth.getCurrentUser();
+
+        mData= FirebaseDatabase.getInstance();
+        DatabaseReference ref1=mData.getReference(mUser.getUid()).child("name");
+
+        return v;
     }
 
     // doesn't need to be here actually yet

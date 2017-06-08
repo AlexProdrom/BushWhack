@@ -1,11 +1,14 @@
 package bw.bushwhack.fragments;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,17 +21,20 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 import bw.bushwhack.R;
 import bw.bushwhack.activities.LoginActivity;
 import bw.bushwhack.activities.ProfileActivity;
 import bw.bushwhack.interfaces.OnAuthorizationScreenSwitchListener;
+import bw.bushwhack.models.User;
 
 import static com.google.android.gms.internal.zzt.TAG;
-
-// TODO: add the actual authorization functionality
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,20 +44,24 @@ import static com.google.android.gms.internal.zzt.TAG;
  * Use the {@link SignUpFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SignUpFragment extends android.support.v4.app.Fragment {
+public class SignUpFragment extends Fragment {
 
-    //Firebase authentification
+    //Firebase authentication
     private FirebaseAuth mAuth;
+    private DatabaseReference mRef;
+    private OnAuthorizationScreenSwitchListener listenerContext;
+    private ProgressDialog progressDialog;
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "email";
+    public static final String ARG_PARAM1 = "email";
 
     //Inputs in order to create account
-    @BindView(R.id.input_name) TextView name;
-    @BindView(R.id.input_email) TextView email;
-    @BindView(R.id.input_password) TextView password;
-
-    private OnAuthorizationScreenSwitchListener listenerContext;
+    @BindView(R.id.input_name)
+    TextView name;
+    @BindView(R.id.input_email)
+    TextView email;
+    @BindView(R.id.input_password)
+    TextView password;
 
     public SignUpFragment() {
         // Required empty public constructor
@@ -69,40 +79,53 @@ public class SignUpFragment extends android.support.v4.app.Fragment {
     //create a new account
     @OnClick(R.id.btn_signup)
     public void onSignUp() {
-        //create user
+        final String name_str=name.getText().toString();
+        final String email_str=email.getText().toString().trim();
+        String password_str=password.getText().toString().trim();
+
+        //Checking for inputs
+        if(TextUtils.isEmpty(email_str)){
+            Toast.makeText(getActivity(),"Please enter email",Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if(TextUtils.isEmpty(password_str)){
+            Toast.makeText(getActivity(),"Please enter password", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        //if the email and password are not empty
+        //displaying a progress dialog
+        progressDialog.setMessage("Registering Please Wait...");
+        progressDialog.show();
+
         mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
-                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(getActivity(),new OnCompleteListener<AuthResult>() {
 
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Log.d(TAG, "createUserWithEmail:failure", task.getException());
                             Toast.makeText(getActivity(), "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
 
                         } else {
-                            // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
+                            FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
 
-                            UpdateUi();
+                            User userData=new User(name_str,email_str);
+                            mRef.child("users").child(user.getUid()).setValue(userData);
+
+                            startActivity(new Intent(getActivity(), ProfileActivity.class));
                         }
+                        progressDialog.dismiss();
                     }
 
                 });
 
     }
 
-    void UpdateUi()
-    {
-        Intent mSwitch=new Intent(getActivity(),ProfileActivity.class);
-        startActivity(mSwitch);
-        getActivity().finish();
-    }
+
 
     /**
      * Use this factory method to create a new instance of
@@ -120,24 +143,25 @@ public class SignUpFragment extends android.support.v4.app.Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View v=inflater.inflate(R.layout.fragment_sign_up, container, false);
+        //Butterknife configuration
+        ButterKnife.bind(this,v);
+
         mAuth=FirebaseAuth.getInstance();
+        mRef= FirebaseDatabase.getInstance().getReference();
+        progressDialog=new ProgressDialog(getActivity());
 
         if (getArguments() != null) {
             email.setText(getArguments().getString(ARG_PARAM1));
         }
+        return v;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sign_up, container, false);
-    }
-
-    @Override
-    public void onAttach(Context context) {
+    public void onAttach(Activity context) {
         super.onAttach(context);
         if (context instanceof OnAuthorizationScreenSwitchListener) {
             listenerContext = (OnAuthorizationScreenSwitchListener) context;

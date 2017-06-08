@@ -27,30 +27,33 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/text_name"
-            android:text="Elliott Cullen"
+            android:text=""
             android:textAppearance="@android:style/TextAppearance.Material.Large"
             android:textAlignment="center"
             android:paddingTop="16dp"
-            android:paddingBottom="8dp"/>
+            android:paddingBottom="8dp"
+            android:textColor="@color/white"/>
 
         <TextView
-            android:text="\@ellicullen89"
+            android:text=""
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/text_nickname"
             android:textAlignment="center"
             android:fontFamily="sans-serif"
             android:paddingTop="0dp"
-            android:paddingBottom="16dp"/>
+            android:paddingBottom="16dp"
+            android:textColor="@color/grey"
+           />
 
-        <Button
-            android:text="EDIT PROFILE"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/button"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            android:textSize="12sp"
-            android:elevation="0dp" />
+        <!--<Button-->
+            <!--android:text="EDIT PROFILE"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/button"-->
+            <!--android:layout_marginLeft="40dp"-->
+            <!--android:layout_marginRight="40dp"-->
+            <!--android:textSize="12sp"-->
+            <!--android:elevation="0dp" />-->
     </LinearLayout>
 </FrameLayout>

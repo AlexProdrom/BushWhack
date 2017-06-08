@@ -11,8 +11,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -21,8 +24,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -34,7 +41,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.location.LocationListener;
 
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
@@ -51,8 +58,60 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                //Log.i(TAG, "Place: " + place.getName());
+                final Place mPlace = place;
+
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapsActivity.this);
+                mBuilder.setTitle("Do you want to save this place to your trail?");
+                mBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        PrompUserWithMarker(mPlace.getLatLng());
+                    }
+                });
+
+                mBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        LatLng latLng = mPlace.getLatLng();
+                        changeCameraLocation(latLng);
+
+                        MarkerOptions options = new MarkerOptions();
+                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        options.position(latLng);
+                        options.title(mPlace.getAddress().toString());
+                        mMap.addMarker(options);
+                        dialog.dismiss();
+                    }
+                });
+
+                final AlertDialog dialog = mBuilder.create();
+                dialog.show();
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                // Log.i(TAG, "An error occurred: " + status);
+            }
+        });
     }
 
+    public void changeCameraLocation(LatLng latLng){
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+    }
 
     /**
      * Manipulates the map once available.
@@ -70,61 +129,80 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
         //initialize google play services
-        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED){
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 buildGoogleApiClient();
                 mMap.setMyLocationEnabled(true);
             }
-        }
-        else {
+        } else {
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
 
-        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener(){
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
                 final LatLng mLatLng = latLng;
-
-                //Get fragment for adding new marker
-                View mView = getLayoutInflater().inflate(R.layout.fragment_new_marker, null);
-                final EditText mMarkerName = (EditText) mView.findViewById(R.id.editTextMarkerName);
-                final Spinner mSpinner = (Spinner) mView.findViewById(R.id.spinnerMarkerType);
-
-                //Get arraylist from strings.xml and assign it to spinner for marker types
-                ArrayAdapter<String> mAdapter = new ArrayAdapter<String>(MapsActivity.this,
-                        android.R.layout.simple_spinner_dropdown_item,
-                        getResources().getStringArray(R.array.markerTypes));
-                mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                mSpinner.setAdapter(mAdapter);
-
-                //Create alert dialog
-                AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapsActivity.this);
-                mBuilder.setTitle("Fill in marker details");
-                mBuilder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        MarkerOptions options = new MarkerOptions();
-                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-                        options.position(mLatLng);
-                        options.title(mMarkerName.getText().toString() +" "+ mSpinner.getSelectedItem().toString());
-                        mMap.addMarker(options);
-                    }
-                });
-
-                mBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                mBuilder.setView(mView);
-                final AlertDialog dialog = mBuilder.create();
-                dialog.show();
+                PrompUserWithMarker(mLatLng);
             }
         });
+    }
+
+
+    public void PrompUserWithMarker(LatLng latLng){
+
+        final LatLng mLatLng = latLng;
+
+        //Get fragment for adding new marker
+        View mView = getLayoutInflater().inflate(R.layout.fragment_new_marker, null);
+        final EditText mMarkerName = (EditText) mView.findViewById(R.id.editTextMarkerName);
+        final Spinner mSpinner = (Spinner) mView.findViewById(R.id.spinnerMarkerType);
+
+        //Get arraylist from strings.xml and assign it to spinner for marker types
+        ArrayAdapter<String> mAdapter = new ArrayAdapter<String>(MapsActivity.this,
+                android.R.layout.simple_spinner_dropdown_item,
+                getResources().getStringArray(R.array.markerTypes));
+        mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinner.setAdapter(mAdapter);
+
+        //Create alert dialog
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapsActivity.this);
+        mBuilder.setTitle("Fill in marker details");
+        mBuilder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                MarkerOptions options = new MarkerOptions();
+                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                options.position(mLatLng);
+                options.title(mMarkerName.getText().toString() +" "+ mSpinner.getSelectedItem().toString());
+                mMap.addMarker(options);
+            }
+        });
+
+        mBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+        dialog.show();
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     protected synchronized void buildGoogleApiClient() {
