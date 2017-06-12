@@ -1,6 +1,7 @@
 package bw.bushwhack.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -34,6 +35,7 @@ import bw.bushwhack.R;
 import bw.bushwhack.interfaces.OnRetrievingDataListener;
 import bw.bushwhack.models.User;
 import bw.bushwhack.presenters.TrailPresenter;
+import bw.bushwhack.services.MarkerApproachService;
 import bw.bushwhack.utils.LocationUtil;
 
 import static bw.bushwhack.activities.MapsActivity.MY_PERMISSIONS_REQUEST_LOCATION;
@@ -68,6 +70,23 @@ public class TrailActivity extends AppCompatActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.trail_map);
         mapFragment.getMapAsync(this);
         // binding of the map fragment done
+    }
+
+    //onStart and onStop in order to manage the notifications through service when user is away from the current trail
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        Intent markerApproachService=new Intent(this,MarkerApproachService.class);
+        stopService(markerApproachService);
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        Intent markerApproachService=new Intent(this,MarkerApproachService.class);
+        startService(markerApproachService);
     }
 
     public void changeCameraLocation(LatLng latLng) {
