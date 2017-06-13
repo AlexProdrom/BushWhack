@@ -15,6 +15,11 @@ public class Dates {
 
     public Dates() {}
 
+    public Dates (Date start, Date end) {
+        this.startDate = start;
+        this.endDate = end;
+    }
+
     public Date getStartDate() {
         return startDate;
     }

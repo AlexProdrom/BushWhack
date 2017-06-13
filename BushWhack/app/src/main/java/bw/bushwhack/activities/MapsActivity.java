@@ -1,6 +1,11 @@
 package bw.bushwhack.activities;
 
 import bw.bushwhack.R;
+import bw.bushwhack.enums.MarkerTypeEnum;
+import bw.bushwhack.models.Dates;
+import bw.bushwhack.models.Trail;
+import bw.bushwhack.presenters.TrailPresenter;
+
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -18,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -40,6 +46,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.location.LocationListener;
 
+import java.util.Date;
+import java.util.HashMap;
+
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -49,6 +58,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+    private TrailPresenter mTrailPresenter;
+    private Trail mCurrentTrail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +72,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        mTrailPresenter = TrailPresenter.getInstance();
+        mCurrentTrail = new Trail();
+
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
@@ -70,6 +84,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 // TODO: Get info about the selected place.
                 //Log.i(TAG, "Place: " + place.getName());
                 final Place mPlace = place;
+
+                changeCameraLocation(place.getLatLng());
 
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapsActivity.this);
                 mBuilder.setTitle("Do you want to save this place to your trail?");
@@ -104,6 +120,41 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onError(Status status) {
                 // TODO: Handle the error.
                 // Log.i(TAG, "An error occurred: " + status);
+            }
+        });
+
+        Button btnSaveTrail = (Button) findViewById(R.id.btn_savetrail);
+        btnSaveTrail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                View mView = getLayoutInflater().inflate(R.layout.fragment_add_trail_name, null);
+                final EditText mEdittextTrailName = (EditText) mView.findViewById(R.id.editTextTrailName);
+
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapsActivity.this);
+                mBuilder.setTitle("Name your trail");
+                mBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        mCurrentTrail.setDate(new Dates(new Date(), new Date()));
+                        mCurrentTrail.setStatus(1);
+                        mCurrentTrail.setTotalDistance(10);
+                        mTrailPresenter.AddNewTrail(mEdittextTrailName.getText().toString(), mCurrentTrail);
+                    }
+                });
+
+                mBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+
+                mBuilder.setView(mView);
+                final AlertDialog dialog = mBuilder.create();
+                dialog.show();
             }
         });
     }
@@ -177,6 +228,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 options.position(mLatLng);
                 options.title(mMarkerName.getText().toString() +" "+ mSpinner.getSelectedItem().toString());
                 mMap.addMarker(options);
+
+
+                mCurrentTrail.mMarkers.put(
+                        mMarkerName.getText().toString(),
+                        new bw.bushwhack.models.Marker(
+                                new bw.bushwhack.models.Location(mLatLng.latitude, mLatLng.longitude),
+                            MarkerTypeEnum.INTERMEDIATE,
+                            mMarkerName.getText().toString())
+                        );
+
+
             }
         });
 
@@ -220,6 +282,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+        mTrailPresenter.updateUserLocation(new bw.bushwhack.models.Location(latlng.latitude, latlng.longitude));
 
         if(mGoogleApiClient != null){
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);

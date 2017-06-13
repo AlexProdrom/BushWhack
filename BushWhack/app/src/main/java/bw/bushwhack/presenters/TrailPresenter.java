@@ -6,11 +6,14 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import bw.bushwhack.interfaces.OnRetrievingDataListener;
 import bw.bushwhack.models.DataModel;
 import bw.bushwhack.models.Location;
+import bw.bushwhack.models.Marker;
+import bw.bushwhack.models.Trail;
 import bw.bushwhack.models.User;
 import bw.bushwhack.views.CurrentTrailView;
 
@@ -93,6 +96,11 @@ public class TrailPresenter {
     public void RetrieveError(Error error) {
         if(error!=null)
             mDataCallback.onErrorOccurance(error);
+    }
+
+    public void AddNewTrail(String name, Trail trail){
+        mCurrentUser.trails.put(name, trail);
+        this.mModel.updateCurrentUser(mCurrentUser);
     }
 
     /**

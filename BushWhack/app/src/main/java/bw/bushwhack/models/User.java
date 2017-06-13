@@ -46,4 +46,6 @@ public class User {
     public void setCurrentLocation(Location currentLocation) {
         this.mCurrentLocation = currentLocation;
     }
+
+
 }

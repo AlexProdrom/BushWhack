@@ -12,12 +12,14 @@ import bw.bushwhack.enums.MarkerTypeEnum;
 public class Marker {
     private Location mLocation;
     private MarkerTypeEnum mType;
+    private String mName;
 
     public Marker() {}
 
-    public Marker(Location location, MarkerTypeEnum type) {
+    public Marker(Location location, MarkerTypeEnum type, String name) {
         this.mLocation = location;
         this.mType = type;
+        this.mName = name;
     }
 
     public Location getLocation() {
@@ -39,5 +41,13 @@ public class Marker {
 
     public void setType(int type) {
         this.mType = MarkerTypeEnum.values()[type];
+    }
+
+    public String getmName() {
+        return mName;
+    }
+
+    public void setmName(String mName) {
+        this.mName = mName;
     }
 }
