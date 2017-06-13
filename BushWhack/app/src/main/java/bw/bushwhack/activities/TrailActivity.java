@@ -73,6 +73,7 @@ public class TrailActivity extends AppCompatActivity
     }
 
     //onStart and onStop in order to manage the notifications through service when user is away from the current trail
+
     @Override
     protected void onStart()
     {
@@ -93,6 +94,7 @@ public class TrailActivity extends AppCompatActivity
         mTrailMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mTrailMap.animateCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM));
     }
+
 
     // TODO: could maybe be moved to a separate class/object?
     protected synchronized void buildGoogleApiClient() {
