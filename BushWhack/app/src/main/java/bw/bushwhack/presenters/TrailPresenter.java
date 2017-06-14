@@ -60,7 +60,9 @@ public class TrailPresenter {
     public boolean updateUserLocation(Location current) {
         if (current != null) {
             this.mCurrentUser.setCurrentLocation(current);
-            this.mModel.updateCurrentUser(mCurrentUser);
+            // replaced with updating only the location
+//            this.mModel.updateCurrentUser(mCurrentUser);
+            this.mModel.updateUserLocation(mCurrentUser.getCurrentLocation());
             return true;
         }
         return false;
@@ -99,8 +101,10 @@ public class TrailPresenter {
     }
 
     public void AddNewTrail(String name, Trail trail){
-        mCurrentUser.trails.put(name, trail);
-        this.mModel.updateCurrentUser(mCurrentUser);
+//        mCurrentUser.trails.put(name, trail);
+        mCurrentUser.addTrail(trail);
+        this.mModel.saveNewTrail(trail);
+//        this.mModel.updateCurrentUser(mCurrentUser);
     }
 
     /**

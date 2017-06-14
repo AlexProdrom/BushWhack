@@ -4,6 +4,7 @@ import com.google.firebase.database.Exclude;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 import bw.bushwhack.enums.StatusEnum;
@@ -13,20 +14,27 @@ import bw.bushwhack.enums.StatusEnum;
  */
 
 public class Trail {
+
+    private String mTrailName;
+    private Double mProgress;
     private Dates mDate;
     private StatusEnum mStatus;
     private double mTotalDistance;
+    @Deprecated
     public HashMap<String, Marker> mMarkers;
+    private List<Marker> mMarkerList;
+
 
     public Trail() {
-        this.mMarkers = new HashMap<>();
     }
 
-    public Trail(Dates date, StatusEnum status, double totalDistance) {
+    public Trail(String name, Dates date, StatusEnum status, double totalDistance) {
+        this.mTrailName = name;
         this.mDate = date;
         this.mMarkers = new HashMap<>();
         this.mStatus = status;
         this.mTotalDistance = totalDistance;
+        this.mMarkerList = new ArrayList<>();
     }
 
     public Dates getDate() {
@@ -59,10 +67,8 @@ public class Trail {
     }
 
     // trail model code for the recycler
-    // TODO: clean up the code and integrate
-    private String mTrailName;
-    private Double mProgress;
 
+    @Deprecated
     public Trail(String name, Double distance) {
         this.mTrailName = name;
         // change later
@@ -71,6 +77,7 @@ public class Trail {
 //        this.mProgress = (new Random()).nextDouble() * 100;
         this.mProgress = 0.0;
         this.mMarkers = new HashMap<>();
+        this.mMarkerList = new ArrayList<>();
     }
 
     public String getName() {
@@ -87,6 +94,7 @@ public class Trail {
 
     // for the dummy data:
     // to be replaced with the actual method to retrieve data from the Firebase stuff
+    @Deprecated
     public static ArrayList<Trail> createTrailList(int numTrails) {
         ArrayList<Trail> trails = new ArrayList<Trail>();
         Random rnd = new Random();
@@ -96,4 +104,11 @@ public class Trail {
         return trails;
     }
 
+    public void addMarker(Marker marker){
+        this.mMarkerList.add(marker);
+    }
+
+    public List<Marker> getMarkers(){
+        return this.mMarkerList;
+    }
 }

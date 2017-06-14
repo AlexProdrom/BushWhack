@@ -43,7 +43,7 @@ public class Marker {
         this.mType = MarkerTypeEnum.values()[type];
     }
 
-    public String getmName() {
+    public String getName() {
         return mName;
     }
 

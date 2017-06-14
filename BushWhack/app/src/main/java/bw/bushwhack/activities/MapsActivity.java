@@ -77,7 +77,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mTrailPresenter = TrailPresenter.getInstance();
-        mCurrentTrail = new Trail(new Dates(new Date(), new Date()), StatusEnum.STARTED, 10);
+        mCurrentTrail = new Trail("Random Name",new Dates(new Date(), new Date()), StatusEnum.STARTED, 10);
 
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
@@ -230,14 +230,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 options.title(mMarkerName.getText().toString() +" "+ mSpinner.getSelectedItem().toString());
                 mMap.addMarker(options);
 
+                bw.bushwhack.models.Marker marker = new bw.bushwhack.models.Marker(
+                        new bw.bushwhack.models.Location(mLatLng.latitude, mLatLng.longitude),
+                        MarkerTypeEnum.INTERMEDIATE,
+                        mMarkerName.getText().toString());
 
-                mCurrentTrail.mMarkers.put(
-                        mMarkerName.getText().toString(),
-                        new bw.bushwhack.models.Marker(
-                                new bw.bushwhack.models.Location(mLatLng.latitude, mLatLng.longitude),
-                            MarkerTypeEnum.INTERMEDIATE,
-                            mMarkerName.getText().toString())
-                        );
+                mCurrentTrail.addMarker(marker);
+//                mCurrentTrail.mMarkers.put(
+//                        mMarkerName.getText().toString(),
+//                        new bw.bushwhack.models.Marker(
+//                                new bw.bushwhack.models.Location(mLatLng.latitude, mLatLng.longitude),
+//                            MarkerTypeEnum.INTERMEDIATE,
+//                            mMarkerName.getText().toString())
+//                        );
 
 
             }

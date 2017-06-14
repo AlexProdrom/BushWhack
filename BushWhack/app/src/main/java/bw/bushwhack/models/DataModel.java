@@ -72,6 +72,22 @@ public class DataModel {
         });
     }
 
+    public void saveNewTrail(Trail t){
+        if(t!=null){
+            String uid = mUser.getUid();
+            DatabaseReference ref = mDatabase.getReference().child("users").child(uid).child("trails").push();
+            ref.setValue(t);
+//            for(Marker m : t.getMarkers()){
+//                ref.child("markers").push().setValue(m);
+//            }
+        }
+    }
+
+    public void updateUserLocation(Location location){
+        DatabaseReference ref = mDatabase.getReference().child("users").child(mUser.getUid()).child("currentLocation");
+        ref.setValue(location);
+    }
+
     public void updateCurrentUser(User u)
     {
         if(u!=null) {
