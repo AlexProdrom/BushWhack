@@ -2,8 +2,11 @@ package bw.bushwhack.activities;
 
 import bw.bushwhack.R;
 import bw.bushwhack.enums.MarkerTypeEnum;
+import bw.bushwhack.enums.StatusEnum;
+import bw.bushwhack.interfaces.OnRetrievingDataListener;
 import bw.bushwhack.models.Dates;
 import bw.bushwhack.models.Trail;
+import bw.bushwhack.models.User;
 import bw.bushwhack.presenters.TrailPresenter;
 
 import android.Manifest;
@@ -46,6 +49,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.location.LocationListener;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -53,7 +57,7 @@ import java.util.HashMap;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener, OnRetrievingDataListener {
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
@@ -73,7 +77,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mTrailPresenter = TrailPresenter.getInstance();
-        mCurrentTrail = new Trail();
+        mCurrentTrail = new Trail(new Dates(new Date(), new Date()), StatusEnum.STARTED, 10);
 
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
@@ -137,9 +141,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        mCurrentTrail.setDate(new Dates(new Date(), new Date()));
-                        mCurrentTrail.setStatus(1);
-                        mCurrentTrail.setTotalDistance(10);
                         mTrailPresenter.AddNewTrail(mEdittextTrailName.getText().toString(), mCurrentTrail);
                     }
                 });
@@ -374,5 +375,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             // other 'case' lines to check for other permissions this app might request.
             //You can add here other case statements according to your requirement.
         }
+    }
+
+    @Override
+    public void onCurrentUserRetrieved(User u) {
+
+    }
+
+    @Override
+    public void onCurrentUsersRetrieved(ArrayList<User> users) {
+
+    }
+
+    @Override
+    public void onErrorOccurance(Error error) {
+
     }
 }

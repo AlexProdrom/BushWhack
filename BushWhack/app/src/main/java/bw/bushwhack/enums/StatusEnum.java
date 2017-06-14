@@ -5,7 +5,7 @@ package bw.bushwhack.enums;
  */
 
 public enum StatusEnum {
-    STARTED(1), IN_PROGRESS(2), FINISHED(3);
+    STARTED(0), IN_PROGRESS(1), FINISHED(2);
 
     private int value;
 

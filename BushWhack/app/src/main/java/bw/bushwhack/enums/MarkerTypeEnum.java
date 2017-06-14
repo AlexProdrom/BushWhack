@@ -5,7 +5,7 @@ package bw.bushwhack.enums;
  */
 
 public enum MarkerTypeEnum {
-    START(1), NEXT_GOAL(2), INTERMEDIATE(3),FINISH(4);
+    START(0), NEXT_GOAL(1), INTERMEDIATE(2),FINISH(3);
     //Start -> trail beginning
     //Next_goal -> next marker to be passed
     //Intermediate -> already passed/will be passed in future, but not first/last/next

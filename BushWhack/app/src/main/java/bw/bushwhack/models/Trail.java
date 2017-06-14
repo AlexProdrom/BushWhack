@@ -18,7 +18,9 @@ public class Trail {
     private double mTotalDistance;
     public HashMap<String, Marker> mMarkers;
 
-    public Trail() {}
+    public Trail() {
+        this.mMarkers = new HashMap<>();
+    }
 
     public Trail(Dates date, StatusEnum status, double totalDistance) {
         this.mDate = date;
@@ -68,6 +70,7 @@ public class Trail {
         // random progress...
 //        this.mProgress = (new Random()).nextDouble() * 100;
         this.mProgress = 0.0;
+        this.mMarkers = new HashMap<>();
     }
 
     public String getName() {

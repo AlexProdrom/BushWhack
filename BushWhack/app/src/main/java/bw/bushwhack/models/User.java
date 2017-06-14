@@ -16,7 +16,9 @@ public class User {
     private  String email;
     public HashMap<String, Trail> trails;
 
-    public User() {}
+    public User() {
+        this.trails = new HashMap<>();
+    }
 
     @Deprecated
     public User(String name) {
