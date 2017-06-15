@@ -168,6 +168,13 @@ public class TrailActivity extends AppCompatActivity
             if (this.isGpsLocationProviderEnabled()) {
                 Location loc = this.mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 mLastKnownLocation = loc;
+
+            }
+            if(mLastKnownLocation == null){
+                Log.d("Location","Got location from the firebase");
+                this.mLastKnownLocation = new Location("");
+                this.mLastKnownLocation.setLatitude(this.mTrailPresenter.getCurrentUser().getCurrentLocation().getLat());
+                this.mLastKnownLocation.setLongitude(this.mTrailPresenter.getCurrentUser().getCurrentLocation().getLng());
             }
 //            couldn't get location - proposed solution
 //            mTrailMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
