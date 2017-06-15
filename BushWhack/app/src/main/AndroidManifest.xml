@@ -21,12 +21,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <activity
-            android:name=".activities.MapsActivity"
-            android:parentActivityName=".activities.ProfileActivity"
+            android:name=".domains.trails.creating.MapsActivity"
+            android:parentActivityName=".domains.profile.ProfileActivity"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activities.ProfileActivity" />
-        <activity android:name=".activities.LoginActivity">
+            android:name=".domains.profile.ProfileActivity" />
+        <activity android:name=".domains.authorization.LoginActivity">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
 
@@ -34,7 +34,7 @@
             </intent-filter>
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.ProfileActivity" />
+                android:value=".domains.profile.ProfileActivity" />
         </activity>
 
         <meta-data
@@ -42,9 +42,8 @@
             android:value="@string/google_maps_key" />
 
         <!-- the settings activity is to be used to edit user data -->
-        <activity android:name=".activities.SettingsActivity" />
         <!-- the map activity that is used when you set on a trail -->
-        <activity android:name=".activities.TrailActivity">
+        <activity android:name=".domains.trails.activeview.TrailActivity">
             <!--<intent-filter>-->
                 <!--<category android:name="android.intent.category.LAUNCHER" />-->
 
@@ -52,7 +51,7 @@
             <!--</intent-filter>-->
         </activity>
 
-        <service android:name=".services.MarkerApproachService" />
+        <service android:name=".global.services.MarkerApproachService" />
     </application>
 
 </manifest>
