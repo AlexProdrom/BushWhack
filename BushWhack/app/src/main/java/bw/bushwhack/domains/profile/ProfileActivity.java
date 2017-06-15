@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.ArrayList;
 
 import bw.bushwhack.R;
+import bw.bushwhack.domains.trails.activeview.TrailActivity;
 import bw.bushwhack.domains.trails.creating.MapsActivity;
 import bw.bushwhack.domains.authorization.LoginActivity;
 import bw.bushwhack.domains.profile.fragments.ProfileInfoFragment;
@@ -27,6 +28,7 @@ import bw.bushwhack.domains.profile.interfaces.ProfileHeaderListener;
 import bw.bushwhack.domains.profile.interfaces.ProfileTrailListListener;
 import bw.bushwhack.data.models.User;
 import bw.bushwhack.domains.trails.TrailPresenter;
+import bw.bushwhack.global.interfaces.Presenter;
 
 public class ProfileActivity extends AppCompatActivity implements
         ProfileHeaderListener, ProfileTrailListListener, OnRetrievingDataListener {
@@ -36,7 +38,7 @@ public class ProfileActivity extends AppCompatActivity implements
 
     private FirebaseAuth mAuth;
     // think about the naming...
-    private TrailPresenter mPresenter;
+    private ProfilePresenter mPresenter;
     private ProfileInfoFragment mProfileTab;
 
 
@@ -46,7 +48,7 @@ public class ProfileActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_profile);
 
         // create it if it was not yet
-        mPresenter = TrailPresenter.getInstance();
+        mPresenter = ProfilePresenter.getInstance();
         mPresenter.setCallBack(this);
 
         ButterKnife.bind(this);
@@ -57,8 +59,13 @@ public class ProfileActivity extends AppCompatActivity implements
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
-                            case R.id.action_profile:
-                                Toast.makeText(context,"Opens the profile fragment", Toast.LENGTH_SHORT).show();
+                            case R.id.action_start_trail:
+                                boolean hasCurrentTrail = ProfilePresenter.getInstance().attemptContinuingATrail();
+                                if(hasCurrentTrail){
+                                    context.startActivity(new Intent(context, TrailActivity.class));
+                                }else{
+                                    Toast.makeText(context,"Huh, looks like you haven't start one yet ;)",Toast.LENGTH_SHORT).show();
+                                }
                                 break;
                             case R.id.action_new_trail:
                                 onAddTrail();

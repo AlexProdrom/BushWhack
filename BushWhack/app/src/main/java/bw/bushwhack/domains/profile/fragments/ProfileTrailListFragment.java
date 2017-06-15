@@ -9,15 +9,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import bw.bushwhack.R;
-import bw.bushwhack.domains.profile.adapters.TrailListAdapter;
+import bw.bushwhack.data.DataModel;
 import bw.bushwhack.domains.profile.interfaces.ProfileTrailListListener;
 import bw.bushwhack.data.models.Trail;
+import bw.bushwhack.domains.profile.viewholders.TrailListViewHolder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,9 +37,10 @@ import bw.bushwhack.data.models.Trail;
 public class ProfileTrailListFragment extends android.support.v4.app.Fragment {
 
     @BindView(R.id.planned_trails_list)
-    RecyclerView mPlannedTrailsList;
+    RecyclerView mTrailRecyclerList;
 
     private LinearLayoutManager mLinearLayoutManager;
+    private FirebaseRecyclerAdapter mTrailListAdapter;
 
     private ProfileTrailListListener mListener;
 
@@ -59,15 +67,25 @@ public class ProfileTrailListFragment extends android.support.v4.app.Fragment {
         if (getArguments() != null) {
         }
 
-//        // get the dummy trails
-//        ArrayList<Trail> trails = Trail.createTrailList(1);
-//        TrailListAdapter tla = new TrailListAdapter(getActivity(), trails);
-//        this.mPlannedTrailsList.setAdapter(tla);
-//
-//        // set the layout manager to position the items in the recycler view
-//        this.mLinearLayoutManager = new LinearLayoutManager(getActivity());
-//        this.mPlannedTrailsList.setLayoutManager(mLinearLayoutManager);
     }
+
+    private void setupTrailListAdapter(Query query){
+        mTrailListAdapter = new FirebaseRecyclerAdapter<Trail, TrailListViewHolder>(Trail.class, R.layout.trail_row_layout, TrailListViewHolder.class, query ) {
+            @Override
+            protected void populateViewHolder(TrailListViewHolder viewHolder, Trail model, int position) {
+
+                viewHolder.setTextViewName(model.getName());
+                viewHolder.setTextViewDistance(model.getDistance());
+                // detecting the key of the object
+                String key = mTrailListAdapter.getRef(position).getKey().toString();
+                viewHolder.setTrailKeyReference(key);
+                viewHolder.setTrailModel(model);
+                // TODO: add the progress logic to the trail
+//                viewHolder.setProgressBarStatus(model.getProgress().intValue());
+            }
+        };
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,26 +97,30 @@ public class ProfileTrailListFragment extends android.support.v4.app.Fragment {
         // not to recreate view again...
         if (savedInstanceState == null) {
 
+            // TODO: separate the query to the other class
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("trails");
+            this.setupTrailListAdapter(ref);
+            this.mTrailRecyclerList.setAdapter(mTrailListAdapter);
+
             // set the layout manager to position the items in the recycler view
             this.mLinearLayoutManager = new LinearLayoutManager(getActivity());
-            this.mPlannedTrailsList.setLayoutManager(mLinearLayoutManager);
+            this.mTrailRecyclerList.setLayoutManager(mLinearLayoutManager);
 
-
-            // get the dummy trails
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    ArrayList<Trail> trails = Trail.createTrailList(20);
-                    // final to be accessible in the inner run
-                    final TrailListAdapter tla = new TrailListAdapter(getActivity(), trails);
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mPlannedTrailsList.setAdapter(tla);
-                        }
-                    });
-                }
-            }).start();
+//            // get the dummy trails
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    ArrayList<Trail> trails = Trail.createTrailList(20);
+//                    // final to be accessible in the inner run
+//                    final TrailListAdapter tla = new TrailListAdapter(getActivity(), trails);
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            mPlannedTrailsList.setAdapter(tla);
+//                        }
+//                    });
+//                }
+//            }).start();
         }
 
         return view;

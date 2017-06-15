@@ -25,8 +25,11 @@
             android:parentActivityName=".domains.profile.ProfileActivity"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".domains.profile.ProfileActivity" />
-        <activity android:name=".domains.authorization.LoginActivity">
+            android:name=".domains.profile.ProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".domains.authorization.LoginActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
 
@@ -45,9 +48,9 @@
         <!-- the map activity that is used when you set on a trail -->
         <activity android:name=".domains.trails.activeview.TrailActivity">
             <!--<intent-filter>-->
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
 
-                <!--<action android:name="android.intent.action.MAIN" />-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
             <!--</intent-filter>-->
         </activity>
 

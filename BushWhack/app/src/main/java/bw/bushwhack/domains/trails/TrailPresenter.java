@@ -9,17 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bw.bushwhack.global.interfaces.OnRetrievingDataListener;
-import bw.bushwhack.data.models.DataModel;
+import bw.bushwhack.data.DataModel;
 import bw.bushwhack.data.models.Location;
 import bw.bushwhack.data.models.Trail;
 import bw.bushwhack.data.models.User;
+import bw.bushwhack.global.interfaces.Presenter;
 import bw.bushwhack.global.views.CurrentTrailView;
 
 /**
  * Created by prodromalex on 6/3/2017.
  */
 
-public class TrailPresenter {
+public class TrailPresenter implements Presenter {
     private volatile static TrailPresenter uniqueInstance;
 
     public static TrailPresenter getInstance() {
@@ -66,12 +67,14 @@ public class TrailPresenter {
         return false;
     }
 
+    @Override
     public void setCallBack(OnRetrievingDataListener callback)
     {
         if(callback!=null)
             mDataCallback=callback;
     }
 
+    @Override
     public void setDatabaseRefs() {
         mModel.setCurrentUserRef();
         mModel.setOtherUsersRef();
@@ -92,6 +95,7 @@ public class TrailPresenter {
             mUsers = users;
     }
 
+    @Override
     @Subscribe
     public void RetrieveError(Error error) {
         if(error!=null)
@@ -108,6 +112,7 @@ public class TrailPresenter {
     /**
      * Used to destroy the instance of the presenter
      */
+    @Override
     public void destroy(){
         this.uniqueInstance = null;
     }

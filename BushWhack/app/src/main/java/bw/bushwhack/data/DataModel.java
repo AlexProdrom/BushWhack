@@ -1,4 +1,4 @@
-package bw.bushwhack.data.models;
+package bw.bushwhack.data;
 
 import android.util.Log;
 
@@ -14,6 +14,10 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import bw.bushwhack.data.models.Location;
+import bw.bushwhack.data.models.Trail;
+import bw.bushwhack.data.models.User;
 
 /**
  * Created by prodromalex on 6/3/2017.
@@ -50,7 +54,7 @@ public class DataModel {
     }
 
     public void setOtherUsersRef() {
-        DatabaseReference ref = mDatabase.getReference().child("users");
+        DatabaseReference ref = FireBaseUtil.getInstance().getAllUsersReference();
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -73,9 +77,10 @@ public class DataModel {
 
     public void saveNewTrail(Trail t){
         if(t!=null){
-            String uid = mUser.getUid();
-            DatabaseReference ref = mDatabase.getReference().child("users").child(uid).child("trails").push();
-            ref.setValue(t);
+            FireBaseUtil.getInstance()
+                    .getCurrentUserTrailsReference()
+                    .push()
+                    .setValue(t);
 //            for(Marker m : t.getMarkers()){
 //                ref.child("markers").push().setValue(m);
 //            }
@@ -83,7 +88,7 @@ public class DataModel {
     }
 
     public void updateUserLocation(Location location){
-        DatabaseReference ref = mDatabase.getReference().child("users").child(mUser.getUid()).child("currentLocation");
+        DatabaseReference ref = FireBaseUtil.getInstance().getCurrentUserProfileReference().child("currentLocation");
         ref.setValue(location);
     }
 

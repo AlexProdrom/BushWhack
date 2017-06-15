@@ -24,6 +24,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -352,9 +354,14 @@ public class TrailActivity extends AppCompatActivity
                     Double kmDistance = Math.floor(totalDistance / 1000);
                     Double mDistance = Math.floor(totalDistance % 1000);
 
+                    // TODO: find the way to display custom markers
+                    BitmapDescriptor icon = BitmapDescriptorFactory
+                            .fromResource(R.drawable.ic_person_pin_circle_black_24dp);
+
                     mTrailMap.addMarker(new MarkerOptions()
                                     .position(personLocation)
                                     .title(person.getName().toString())
+//                                    .icon(icon)
                                     .snippet("From you: "
                                             +
                                             kmDistance.intValue()

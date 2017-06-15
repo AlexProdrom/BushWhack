@@ -41,6 +41,10 @@ public class Trail {
         return mDate;
     }
 
+    public void setName(String name){
+        this.mTrailName = name;
+    }
+
     public void setDate(Dates Date) {
         this.mDate = Date;
     }
@@ -88,7 +92,7 @@ public class Trail {
         return this.mTotalDistance;
     }
 
-    public Double getmProgress() {
+    public Double getProgress() {
         return this.mProgress;
     }
 
