@@ -15,15 +15,15 @@ public class LocationUtil {
 
     // TODO: this does not really work, fix needed!
     // from https://stackoverflow.com/questions/14394366/find-distance-between-two-points-on-map-using-google-map-api-v2
+
     /**
      * Finds the absolute distance between the two points
+     *
      * @param StartP
      * @param EndP
      * @return meters
      */
     static public double CalculationByDistance(LatLng StartP, LatLng EndP) {
-
-
 
         int Radius = 6371;// radius of earth in Km
         double lat1 = StartP.latitude;
@@ -47,8 +47,6 @@ public class LocationUtil {
                 + " Meter   " + meterInDec);
 
         return Radius * c;
-//        return meterInDec ;
+        //return meterInDec;
     }
-
-
 }

@@ -8,13 +8,13 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
+import bw.bushwhack.global.events.Error;
 import bw.bushwhack.global.interfaces.OnRetrievingDataListener;
 import bw.bushwhack.data.DataModel;
 import bw.bushwhack.data.models.Location;
 import bw.bushwhack.data.models.Trail;
 import bw.bushwhack.data.models.User;
 import bw.bushwhack.global.interfaces.Presenter;
-import bw.bushwhack.global.views.CurrentTrailView;
 
 /**
  * Created by prodromalex on 6/3/2017.
@@ -27,7 +27,7 @@ public class TrailPresenter implements Presenter {
         if (uniqueInstance == null) {
             synchronized (TrailPresenter.class) {
                 if (uniqueInstance == null) {
-                    uniqueInstance = new TrailPresenter(new DataModel(), new CurrentTrailView());
+                    uniqueInstance = new TrailPresenter(new DataModel());
                 }
             }
         }
@@ -42,16 +42,14 @@ public class TrailPresenter implements Presenter {
     }
 
     private DataModel mModel;
-    private CurrentTrailView mView;
     private EventBus mBus = EventBus.getDefault();
     private OnRetrievingDataListener mDataCallback;
 
     private User mCurrentUser;
     private List<User> mUsers;
 
-    private TrailPresenter(DataModel model, CurrentTrailView view) {
+    private TrailPresenter(DataModel model) {
         this.mModel = model;
-        this.mView = view;
         mBus.register(this);
         this.setDatabaseRefs();
     }
@@ -95,7 +93,6 @@ public class TrailPresenter implements Presenter {
             mUsers = users;
     }
 
-    @Override
     @Subscribe
     public void RetrieveError(Error error) {
         if(error!=null)

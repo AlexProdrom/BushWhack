@@ -32,6 +32,7 @@ import bw.bushwhack.data.models.User;
 
 import static android.app.Notification.DEFAULT_ALL;
 
+//TODO:check if it works by only adding notification in the TrailActivity, otherwise update this service
 public class MarkerApproachService extends Service {
 
     private LocationManager mLocationManager;
@@ -43,7 +44,7 @@ public class MarkerApproachService extends Service {
     private static final String TAG = "GPS";
     private static final int LOCATION_INTERVAL = 1000;
     private static final int LOCATION_DISTANCE = 100;
-    private static final int NOTIFICATION_ID=1;
+    private static final int NOTIFICATION_ID = 1;
 
     private final List<User> peopleList = new ArrayList<>();
     private User mCurrentUser;
@@ -68,15 +69,14 @@ public class MarkerApproachService extends Service {
     }
 
     @Override
-    public void onCreate()
-    {
+    public void onCreate() {
         initialize();
         setOtherUsersRef();
-        mUser=mAuth.getCurrentUser();
+        mUser = mAuth.getCurrentUser();
 
         try {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,LOCATION_INTERVAL,
-                    LOCATION_DISTANCE,mLocationListenerGPS);
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL,
+                    LOCATION_DISTANCE, mLocationListenerGPS);
         } catch (java.lang.SecurityException ex) {
             Log.i(TAG, "fail to request location update, ignore", ex);
         }
@@ -86,13 +86,11 @@ public class MarkerApproachService extends Service {
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
-        if(mDatabase==null)
-        {
+        if (mDatabase == null) {
             mDatabase = FirebaseDatabase.getInstance();
         }
-        if(mAuth==null)
-        {
-            mAuth=FirebaseAuth.getInstance();
+        if (mAuth == null) {
+            mAuth = FirebaseAuth.getInstance();
         }
     }
 
@@ -102,11 +100,10 @@ public class MarkerApproachService extends Service {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    if(!postSnapshot.getKey().equals(mUser.getUid())) {
+                    if (!postSnapshot.getKey().equals(mUser.getUid())) {
                         User person = postSnapshot.getValue(User.class);
                         peopleList.add(person);
-                    }
-                    else {
+                    } else {
                         mCurrentUser = postSnapshot.getValue(User.class);
                         distanceChecks();
                     }
@@ -118,12 +115,12 @@ public class MarkerApproachService extends Service {
             }
         });
     }
-    private void distanceChecks()
-    {
+
+    private void distanceChecks() {
         createNotification();
     }
-    private void createNotification()
-    {
+
+    private void createNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Intent trailIntent = new Intent(getApplicationContext(), TrailActivity.class);
         PendingIntent pIntent = PendingIntent.getActivity(getApplicationContext(), (int) System.currentTimeMillis(), trailIntent, 0);
@@ -143,13 +140,11 @@ public class MarkerApproachService extends Service {
 
         private Location mLastLocation;
 
-        private MyLocationListener(String provider)
-        {
+        private MyLocationListener(String provider) {
             mLastLocation = new Location(provider);
         }
 
-        public Location getLastLocation()
-        {
+        public Location getLastLocation() {
             return mLastLocation;
         }
 

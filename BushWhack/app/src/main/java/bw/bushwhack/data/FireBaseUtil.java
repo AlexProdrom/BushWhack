@@ -25,7 +25,6 @@ public class FireBaseUtil {
             mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
         } catch (Exception e) {
-
             Log.e("Reference setup", e.getMessage());
         }
     }
@@ -53,7 +52,6 @@ public class FireBaseUtil {
     }
 
     public DatabaseReference getCurrentUserProfileReference(){
-
         FirebaseUser currentUser = FireBaseUtil.getInstance().getFirebaseAuth().getCurrentUser();
         DatabaseReference ref = FireBaseUtil.getInstance().getDatabaseReference().child("users").child(currentUser.getUid());
         return ref;

@@ -23,6 +23,7 @@ import bw.bushwhack.domains.trails.creating.MapsActivity;
 import bw.bushwhack.domains.authorization.LoginActivity;
 import bw.bushwhack.domains.profile.fragments.ProfileInfoFragment;
 import bw.bushwhack.domains.profile.fragments.ProfileTrailListFragment;
+import bw.bushwhack.global.events.Error;
 import bw.bushwhack.global.interfaces.OnRetrievingDataListener;
 import bw.bushwhack.domains.profile.interfaces.ProfileHeaderListener;
 import bw.bushwhack.domains.profile.interfaces.ProfileTrailListListener;

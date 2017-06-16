@@ -18,6 +18,7 @@ import java.util.List;
 import bw.bushwhack.data.models.Location;
 import bw.bushwhack.data.models.Trail;
 import bw.bushwhack.data.models.User;
+import bw.bushwhack.global.events.Error;
 
 /**
  * Created by prodromalex on 6/3/2017.
@@ -41,7 +42,6 @@ public class DataModel {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.i("datasnap",dataSnapshot.toString());
                 User person = dataSnapshot.getValue(User.class);
                 mBus.post(person);
             }
@@ -63,7 +63,6 @@ public class DataModel {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     User person = postSnapshot.getValue(User.class);
                     peopleList.add(person);
-
                 }
                 mBus.post(peopleList);
             }
