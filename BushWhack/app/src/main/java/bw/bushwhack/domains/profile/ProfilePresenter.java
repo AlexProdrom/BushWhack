@@ -58,7 +58,7 @@ public class ProfilePresenter implements Presenter {
     }
 
     public void setNewCurrentTrail(String trailReferenceKey){
-        mModel.setCurrentTrail(trailReferenceKey);
+        mModel.setCurrentTrail(trailReferenceKey, this.getCurrentUser());
     }
 
 

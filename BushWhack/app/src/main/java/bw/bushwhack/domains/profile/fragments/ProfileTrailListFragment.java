@@ -80,6 +80,7 @@ public class ProfileTrailListFragment extends android.support.v4.app.Fragment {
                 String key = mTrailListAdapter.getRef(position).getKey().toString();
                 viewHolder.setTrailKeyReference(key);
                 viewHolder.setTrailModel(model);
+                viewHolder.setSelectionIndicator(key);
                 // TODO: add the progress logic to the trail
 //                viewHolder.setProgressBarStatus(model.getProgress().intValue());
             }
