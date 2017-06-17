@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import bw.bushwhack.R;
 import bw.bushwhack.global.interfaces.OnRetrievingDataListener;
@@ -45,6 +46,7 @@ public class TrailActivity extends AppCompatActivity
         OnRetrievingDataListener {
 
     private GoogleMap mTrailMap;
+    private List<User> mUsers;
     private TrailPresenter mTrailPresenter;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -61,6 +63,7 @@ public class TrailActivity extends AppCompatActivity
         this.mTrailPresenter = TrailPresenter.getInstance();
         mTrailPresenter.setCallBack(this);
 
+        this.mUsers = new ArrayList<>();
         // prepare the view
         setContentView(R.layout.activity_trail);
         // Obtain the SMF and get notified when the map is ready to be used
@@ -72,18 +75,16 @@ public class TrailActivity extends AppCompatActivity
     //onStart and onStop in order to manage the notifications through service when user is away from the current trail
 
     @Override
-    protected void onStart()
-    {
+    protected void onStart() {
         super.onStart();
-        Intent markerApproachService=new Intent(this,MarkerApproachService.class);
+        Intent markerApproachService = new Intent(this, MarkerApproachService.class);
         stopService(markerApproachService);
     }
 
     @Override
-    protected void onStop()
-    {
+    protected void onStop() {
         super.onStop();
-        Intent markerApproachService=new Intent(this,MarkerApproachService.class);
+        Intent markerApproachService = new Intent(this, MarkerApproachService.class);
         startService(markerApproachService);
     }
 
@@ -172,8 +173,8 @@ public class TrailActivity extends AppCompatActivity
                 mLastKnownLocation = loc;
 
             }
-            if(mLastKnownLocation == null){
-                Log.d("Location","Got location from the firebase");
+            if (mLastKnownLocation == null) {
+                Log.d("Location", "Got location from the firebase");
                 this.mLastKnownLocation = new Location("");
                 this.mLastKnownLocation.setLatitude(this.mTrailPresenter.getCurrentUser().getCurrentLocation().getLat());
                 this.mLastKnownLocation.setLongitude(this.mTrailPresenter.getCurrentUser().getCurrentLocation().getLng());
@@ -240,6 +241,13 @@ public class TrailActivity extends AppCompatActivity
 
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
+
+
+        // change the user markers
+        if (this.mUsers != null) {
+
+            this.displayUsersMarkers((ArrayList<User>) this.mUsers);
         }
     }
 
@@ -330,13 +338,16 @@ public class TrailActivity extends AppCompatActivity
     // TODO: figure why it is not triggered every time on sttart up, but IS TRIGGERED ON EVERY current location button click
     @Override
     public void onCurrentUsersRetrieved(ArrayList<User> users) {
+
         mTrailMap.clear();
+        this.mUsers = users;
 //        ArrayList<MarkerOptions> markers = new ArrayList<>();
         // show the list of the users
         this.displayUsersMarkers(users);
     }
 
     protected void displayUsersMarkers(ArrayList<User> users) {
+        // TODO: maybe add some logical filtering not to keep track of ALL the users
         for (User person : users) {
             if (person.getCurrentLocation() != null) {
 

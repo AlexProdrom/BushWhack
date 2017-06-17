@@ -13,8 +13,10 @@ public class Marker {
     private Location mLocation;
     private MarkerTypeEnum mType;
     private String mName;
+    private boolean mIsReached;
 
-    public Marker() {}
+    public Marker() {
+    }
 
     public Marker(Location location, MarkerTypeEnum type, String name) {
         this.mLocation = location;
@@ -47,7 +49,15 @@ public class Marker {
         return mName;
     }
 
-    public void setmName(String mName) {
+    public void setName(String mName) {
         this.mName = mName;
+    }
+
+    public boolean getIsReached() {
+        return this.mIsReached;
+    }
+
+    public void setIsReached(boolean isReached) {
+        this.mIsReached = isReached;
     }
 }

@@ -11,17 +11,23 @@ import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import bw.bushwhack.R;
 import bw.bushwhack.data.DataModel;
+import bw.bushwhack.data.FireBaseUtil;
+import bw.bushwhack.data.models.Marker;
 import bw.bushwhack.domains.profile.interfaces.ProfileTrailListListener;
 import bw.bushwhack.data.models.Trail;
 import bw.bushwhack.domains.profile.viewholders.TrailListViewHolder;
@@ -69,18 +75,64 @@ public class ProfileTrailListFragment extends android.support.v4.app.Fragment {
 
     }
 
-    private void setupTrailListAdapter(Query query){
-        mTrailListAdapter = new FirebaseRecyclerAdapter<Trail, TrailListViewHolder>(Trail.class, R.layout.trail_row_layout, TrailListViewHolder.class, query ) {
+    private void setupTrailListAdapter(Query query) {
+        mTrailListAdapter = new FirebaseRecyclerAdapter<Trail, TrailListViewHolder>(Trail.class, R.layout.trail_row_layout, TrailListViewHolder.class, query) {
             @Override
             protected void populateViewHolder(TrailListViewHolder viewHolder, Trail model, int position) {
+
 
                 viewHolder.setTextViewName(model.getName());
                 viewHolder.setTextViewDistance(model.getDistance());
                 // detecting the key of the object
-                String key = mTrailListAdapter.getRef(position).getKey().toString();
-                viewHolder.setTrailKeyReference(key);
-                viewHolder.setTrailModel(model);
-                viewHolder.setSelectionIndicator(key);
+                final String key = mTrailListAdapter.getRef(position).getKey().toString();
+
+                // DUE TO INTERNAL IMPLEMENTATION OF THE FirebaseAdapter
+                // this is the only apparent way to retrieve the markers - not sure if it reasonable to do so this way
+                // as it is definitely prone to redundant traffic and will slow down the application
+                // the markers are retrieved here for getting the progress and stuff like this, but maybe it would be a better idea
+                // to add those properties directly to each trail object as then we can request them dierctly
+                // This solution proposed here: https://stackoverflow.com/questions/42632210/firebaserecycleradapter-with-nested-elements
+                final Trail finalModel = model;
+                final TrailListViewHolder finalViewHolder = viewHolder;
+//                final ArrayList<Marker> markers = new ArrayList<>();
+
+                FireBaseUtil.getInstance().getCurrentUserTrailsReference().child(key).child("markers")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                float totalMarkers = 0;
+                                float reachedMarkers = 0;
+                                for (DataSnapshot markerSnapShot : dataSnapshot.getChildren()) {
+//                                    markers.add(dataSnapshot.getValue(Marker.class));
+                                    totalMarkers++;
+                                    Marker m = markerSnapShot.getValue(Marker.class);
+                                    if (m.getIsReached()) {
+                                        reachedMarkers++;
+                                    }
+                                }
+                                finalViewHolder.setTrailKeyReference(key);
+                                finalViewHolder.setTrailModel(finalModel);
+                                finalViewHolder.setSelectionIndicator(key);
+                                // setting the progress
+                                int progress = 0;
+                                if (totalMarkers != 0) {
+
+                                    progress = (int) Math.ceil((reachedMarkers / totalMarkers) * 100);
+                                }
+
+                                finalViewHolder.setProgressBarStatus(progress);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                // bad bad code
+
+//                viewHolder.setTrailKeyReference(key);
+//                viewHolder.setTrailModel(model);
+//                viewHolder.setSelectionIndicator(key);
                 // TODO: add the progress logic to the trail
 //                viewHolder.setProgressBarStatus(model.getProgress().intValue());
             }
