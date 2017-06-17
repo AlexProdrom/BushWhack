@@ -53,7 +53,8 @@ public class TrailActivity extends AppCompatActivity
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
         OnRetrievingDataListener,
-        CurrentTrailCallback {
+        CurrentTrailCallback,
+        android.location.LocationListener {
 
     private GoogleMap mTrailMap;
     private List<User> mUsers;
@@ -213,12 +214,14 @@ public class TrailActivity extends AppCompatActivity
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setInterval(10);
+        mLocationRequest.setFastestInterval(10);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
+
+
     }
 
     @Override
@@ -249,7 +252,7 @@ public class TrailActivity extends AppCompatActivity
         // changes the camera location
         this.changeCameraLocation(latlng);
 
-        if (mGoogleApiClient != null) {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
 
@@ -259,6 +262,21 @@ public class TrailActivity extends AppCompatActivity
 
             this.displayUsersMarkers((ArrayList<User>) this.mUsers);
         }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 
     // the code from StackOverflow to check if the permission is fine and all that
@@ -299,13 +317,25 @@ public class TrailActivity extends AppCompatActivity
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         }
+        boolean enabled = false;
         try {
-            return mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+            }
+            enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 10, (android.location.LocationListener) this);
+//            return enabled;
         } catch (Exception e) {
             Log.d("GPS broke", e.getMessage());
         }
 
-        return false;
+        return enabled;
     }
 
 
@@ -359,7 +389,7 @@ public class TrailActivity extends AppCompatActivity
                 // show the list of the users
                 this.displayUsersMarkers(users);
             }
-        }catch (NullPointerException npe){
+        } catch (NullPointerException npe) {
             Log.e("ErrorUsers", npe.getMessage());
         }
     }
@@ -445,8 +475,8 @@ public class TrailActivity extends AppCompatActivity
 
                 // TODO: marker types...
                 mTrailMap.addMarker(new MarkerOptions()
-                                .position(markerLocation)
-                                .title(markerName).zIndex(100)
+                        .position(markerLocation)
+                        .title(markerName).zIndex(100)
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
                 );
             }
