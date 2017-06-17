@@ -118,4 +118,12 @@ public class DataModel {
             }
         });
     }
+
+    public void setMarkerReached(String trailKey, int markerNumber){
+        DatabaseReference ref = FireBaseUtil.getInstance()
+                .getUserTrailMarkersReference(trailKey)
+                .child(Integer.toString(markerNumber))
+                .child("isReached");
+        ref.setValue(true);
+    }
 }
