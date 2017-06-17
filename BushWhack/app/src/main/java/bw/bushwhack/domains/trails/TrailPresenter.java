@@ -141,6 +141,10 @@ public class TrailPresenter implements Presenter {
         }
     }
 
+    public void setMarkerReached(int markerNumber){
+        mModel.setMarkerReached(this.mCurrentUser.getCurrentTrail(),markerNumber);
+    }
+
 
     /**
      * Used to destroy the instance of the presenter

@@ -54,6 +54,8 @@ import bw.bushwhack.global.services.MarkerApproachService;
 
 import static android.app.Notification.DEFAULT_ALL;
 
+// TODO: the rqeuests for the location permissions ruin the application on every frist time start up -> we need to handle it somehow
+
 public class TrailActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -62,6 +64,10 @@ public class TrailActivity extends AppCompatActivity
         OnRetrievingDataListener,
         CurrentTrailCallback,
         android.location.LocationListener {
+
+    private final int LOCATION_UPDATE_TIME_INTERVAL = 50;
+    private final int LOCATION_UPDATE_DISTANCE_INTERVAL = 3;
+    private final int MIN_DISTANCE_TO_MARKER_FOR_NOTIFICATION = 4;
 
     private GoogleMap mTrailMap;
     private List<User> mUsers;
@@ -72,7 +78,6 @@ public class TrailActivity extends AppCompatActivity
     private Location mLastKnownLocation;
     private final int DEFAULT_ZOOM = 15;
 
-    // TODO: move camera to the location on create
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,7 +120,7 @@ public class TrailActivity extends AppCompatActivity
     }
 
 
-    // TODO: could maybe be moved to a separate class/object?
+    // TODO: should be moved to a separate class or object I suppose
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -139,7 +144,6 @@ public class TrailActivity extends AppCompatActivity
             @Override
             public boolean onMyLocationButtonClick() {
 
-                // TODO: this stuff triggers on users data retrieved, investiagate why
                 boolean permissionGranted = checkLocationPermission();
                 // maybe there will be too many unnecessary checks
                 if (permissionGranted) {
@@ -149,7 +153,6 @@ public class TrailActivity extends AppCompatActivity
             }
         });
 
-        // TODO: I remember the discussion whether we need to change it
         mTrailMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
         //initialize google play services
@@ -272,25 +275,30 @@ public class TrailActivity extends AppCompatActivity
             this.displayUsersMarkers((ArrayList<User>) this.mUsers);
         }
 
-        List<Marker> markers=mTrailPresenter.getMarkers();
+        List<Marker> markers = mTrailPresenter.getMarkers();
 
-        for(int i=0;i<markers.size();i++)
-        {
-            Location markerLocation=markers.get(i).getLocation().getAndroidLocation();
-            double distanceToMarker=Math.floor(location.distanceTo(markerLocation));
-            if(distanceToMarker<4)
-                createNotification(markers.get(i).getName(),distanceToMarker);
+        for (int i = 0; i < markers.size(); i++) {
+            Location markerLocation = markers.get(i).getLocation().getAndroidLocation();
+            int distanceToMarker = (int) Math.floor(location.distanceTo(markerLocation));
+            if (distanceToMarker < MIN_DISTANCE_TO_MARKER_FOR_NOTIFICATION) {
+
+                createNotification(markers.get(i).getName(), distanceToMarker);
+                // write to the database
+                mTrailPresenter.setMarkerReached(i);
+                Log.d("MarkerReached", "Reached the marker with id: " + i + " and name " + markers.get(i).getName());
+            }
+
         }
     }
 
-    private void createNotification(String markerName,double distance) {
+    private void createNotification(String markerName, double distance) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-         Intent trailIntent = new Intent(getApplicationContext(), TrailActivity.class);
+        Intent trailIntent = new Intent(getApplicationContext(), TrailActivity.class);
         PendingIntent pIntent = PendingIntent.getActivity(getApplicationContext(), (int) System.currentTimeMillis(), trailIntent, 0);
 
         Notification n = new Notification.Builder(getApplicationContext())
                 .setContentTitle("BushWhack")
-                .setContentText("Approaching marker "+markerName+" in "+distance+"m !")
+                .setContentText("Approaching marker " + markerName + " in " + distance + "m !")
                 .setSmallIcon(R.drawable.ic_marker_notification)
                 .setContentIntent(pIntent)
                 .setDefaults(DEFAULT_ALL)
@@ -355,16 +363,13 @@ public class TrailActivity extends AppCompatActivity
         boolean enabled = false;
         try {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
+                // could call the permission request here, but we target API 21 + which can't handle it
             }
             enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 50, 3, (android.location.LocationListener) this);
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    LOCATION_UPDATE_TIME_INTERVAL,
+                    LOCATION_UPDATE_DISTANCE_INTERVAL,
+                    this);
 //            return enabled;
         } catch (Exception e) {
             Log.d("GPS broke", e.getMessage());
@@ -441,7 +446,7 @@ public class TrailActivity extends AppCompatActivity
 
                             // Toast.makeText(this, "Person has a location", Toast.LENGTH_SHORT).show();
                             Location personLoc = person.getCurrentLocation().getAndroidLocation();
-                            LatLng personLocation=person.getCurrentLocation().getLatLng();
+                            LatLng personLocation = person.getCurrentLocation().getLatLng();
 
                             float totalDistance = personLoc.distanceTo(mLastKnownLocation);
                             Double kmDistance = Math.floor(totalDistance / 1000);
@@ -450,24 +455,31 @@ public class TrailActivity extends AppCompatActivity
                             // TODO: find the way to display custom markers
 //                            BitmapDescriptor icon = BitmapDescriptorFactory
 //                                    .fromResource(R.drawable.ic_person_pin_circle_black_24dp);
+                            if (kmDistance <= 2) {
 
-                            mTrailMap.addMarker(new MarkerOptions()
-                                            .position(personLocation)
-                                            .title(person.getName())
+//                                float opacity = (48000/totalDistance);
+//                                if(opacity>100){
+//                                    opacity = 100;
+//                                }
+                                mTrailMap.addMarker(new MarkerOptions()
+                                                .position(personLocation)
+                                                .title(person.getName())
+//                                                .alpha(opacity/100)
 //                                    .icon(icon)
-                                            .snippet("From you: "
-                                                    +
-                                                    kmDistance.intValue()
-                                                    +
-                                                    " km "
-                                                    +
-                                                    mDistance.intValue()
+                                                .snippet("From you: "
+                                                        +
+                                                        kmDistance.intValue()
+                                                        +
+                                                        " km "
+                                                        +
+                                                        mDistance.intValue()
 //                                            LocationUtil.CalculationByDistance(
 //                                            new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLatitude())
 //                                            , personLocation)
-                                                    + " m")
+                                                        + " m")
 //                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_person_black_24dp))
-                            );
+                                );
+                            }
                         }
                     }
                 }
