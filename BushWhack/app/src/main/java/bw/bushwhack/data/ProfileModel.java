@@ -5,7 +5,6 @@ import android.util.Log;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
@@ -41,7 +40,7 @@ public class ProfileModel {
         if(user.getCurrentTrail() != null){
             FireBaseUtil.getInstance().getCurrentUserTrailsReference().child(user.getCurrentTrail()).child("selected").setValue(false);
         }
-        FireBaseUtil.getInstance().getUserCurrentTrailReference().setValue(key);
+        FireBaseUtil.getInstance().getUserCurrentTrailKeyReference().setValue(key);
         FireBaseUtil.getInstance().getCurrentUserTrailsReference().child(key).child("selected").setValue(true);
     }
 }

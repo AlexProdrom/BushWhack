@@ -1,7 +1,5 @@
 package bw.bushwhack.data;
 
-import android.util.Log;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -16,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bw.bushwhack.data.models.Location;
+import bw.bushwhack.data.models.Marker;
 import bw.bushwhack.data.models.Trail;
 import bw.bushwhack.data.models.User;
 import bw.bushwhack.global.events.Error;
@@ -74,8 +73,8 @@ public class DataModel {
         });
     }
 
-    public void saveNewTrail(Trail t){
-        if(t!=null){
+    public void saveNewTrail(Trail t) {
+        if (t != null) {
             FireBaseUtil.getInstance()
                     .getCurrentUserTrailsReference()
                     .push()
@@ -86,16 +85,37 @@ public class DataModel {
         }
     }
 
-    public void updateUserLocation(Location location){
+    public void updateUserLocation(Location location) {
         DatabaseReference ref = FireBaseUtil.getInstance().getCurrentUserProfileReference().child("currentLocation");
         ref.setValue(location);
     }
 
-    public void updateCurrentUser(User u)
-    {
-        if(u!=null) {
+    public void updateCurrentUser(User u) {
+        if (u != null) {
             DatabaseReference ref = mDatabase.getReference().child("users").child(mUser.getUid());
             ref.setValue(u);
         }
+    }
+
+    public void setTrailMarkersRef(String trailKey){
+
+        DatabaseReference ref = FireBaseUtil.getInstance()
+               .getUserTrailMarkersReference(trailKey);
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final List<Marker> markerList = new ArrayList<Marker>();
+                for(DataSnapshot markerSnapshot : dataSnapshot.getChildren()){
+                    markerList.add(markerSnapshot.getValue(Marker.class));
+                }
+                mBus.post(markerList);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                mBus.post(new Error(databaseError.getMessage()));
+            }
+        });
     }
 }

@@ -52,8 +52,8 @@ public class FireBaseUtil {
     }
 
     public DatabaseReference getCurrentUserProfileReference(){
-        FirebaseUser currentUser = FireBaseUtil.getInstance().getFirebaseAuth().getCurrentUser();
-        DatabaseReference ref = FireBaseUtil.getInstance().getDatabaseReference().child("users").child(currentUser.getUid());
+        FirebaseUser currentUser = this.getFirebaseAuth().getCurrentUser();
+        DatabaseReference ref = this.getDatabaseReference().child("users").child(currentUser.getUid());
         return ref;
     }
 
@@ -71,7 +71,11 @@ public class FireBaseUtil {
         return this.getDatabaseReference().child("users");
     }
 
-    public DatabaseReference getUserCurrentTrailReference(){
+    public DatabaseReference getUserCurrentTrailKeyReference(){
         return this.getCurrentUserProfileReference().child("currentTrail");
+    }
+
+    public DatabaseReference getUserTrailMarkersReference(String trailKey){
+        return this.getCurrentUserTrailsReference().child(trailKey).child("markers");
     }
 }

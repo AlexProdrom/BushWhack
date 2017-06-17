@@ -8,6 +8,8 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
+import bw.bushwhack.data.models.Marker;
+import bw.bushwhack.domains.trails.activeview.interfaces.CurrentTrailCallback;
 import bw.bushwhack.global.events.Error;
 import bw.bushwhack.global.interfaces.OnRetrievingDataListener;
 import bw.bushwhack.data.DataModel;
@@ -34,10 +36,11 @@ public class TrailPresenter implements Presenter {
         return uniqueInstance;
     }
 
-    public User getCurrentUser(){
+    public User getCurrentUser() {
         return mCurrentUser;
     }
-    public List<User> getUsers(){
+
+    public List<User> getUsers() {
         return mUsers;
     }
 
@@ -66,51 +69,81 @@ public class TrailPresenter implements Presenter {
     }
 
     @Override
-    public void setCallBack(OnRetrievingDataListener callback)
-    {
-        if(callback!=null)
-            mDataCallback=callback;
+    public void setCallBack(OnRetrievingDataListener callback) {
+        if (callback != null)
+            mDataCallback = callback;
+        // only if the instance of the connected callback is the current trail viewer, set the refs
+        if (mDataCallback instanceof CurrentTrailCallback) {
+            mModel.setOtherUsersRef();
+        }
     }
 
     @Override
     public void setDatabaseRefs() {
         mModel.setCurrentUserRef();
-        mModel.setOtherUsersRef();
+        // removed setting other user ref as we don't need it while in the creating trail activity
     }
 
+    // for some reasons it is being called a lot of times
     @Subscribe
     public void RetrieveCurrentUser(User user) {
-        Log.i("user data",user.toString());
+        Log.i("user data", user.toString());
         if (user != null)
             mDataCallback.onCurrentUserRetrieved(user);
-            mCurrentUser = user;
+        mCurrentUser = user;
+        if(this.mDataCallback instanceof CurrentTrailCallback){
+            this.retrieveCurrentTrailMarkers();
+        }
     }
 
     @Subscribe
     public void RetrieveOtherUsers(ArrayList<User> users) {
         if (!users.isEmpty())
             mDataCallback.onCurrentUsersRetrieved(users);
-            mUsers = users;
+        mUsers = users;
     }
 
     @Subscribe
     public void RetrieveError(Error error) {
-        if(error!=null)
+        if (error != null)
             mDataCallback.onErrorOccurance(error);
     }
 
-    public void AddNewTrail(String name, Trail trail){
+    public void AddNewTrail(String name, Trail trail) {
 //        mCurrentUser.trails.put(name, trail);
         mCurrentUser.addTrail(trail);
         this.mModel.saveNewTrail(trail);
 //        this.mModel.updateCurrentUser(mCurrentUser);
     }
 
+    // for the current trail
+
+    // set reference
+    public void retrieveCurrentTrailMarkers() {
+        mModel.setTrailMarkersRef(this.mCurrentUser.getCurrentTrail());
+    }
+
+    // get get the notification with the response
+    // is subscribed to the eventbus notification
+    @Subscribe
+    public void onRetrieveCurrentTrailMarkers(List<Marker> markerList) {
+        try {
+
+            if (!markerList.isEmpty() && (markerList.get(0) instanceof Marker)) {
+
+                ((CurrentTrailCallback) this.mDataCallback).onRetrievedMarkers(markerList);
+            }
+        } catch (Exception e) {
+            Log.e("EventBusForMarkerList", e.getMessage());
+        }
+    }
+
+
     /**
      * Used to destroy the instance of the presenter
      */
     @Override
-    public void destroy(){
+    public void destroy() {
         this.uniqueInstance = null;
     }
 }

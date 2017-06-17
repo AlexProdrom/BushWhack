@@ -3,6 +3,10 @@ package bw.bushwhack.domains.trails.activeview;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -10,6 +14,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,6 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bw.bushwhack.R;
+import bw.bushwhack.data.models.Marker;
+import bw.bushwhack.domains.trails.activeview.interfaces.CurrentTrailCallback;
 import bw.bushwhack.global.events.Error;
 import bw.bushwhack.global.interfaces.OnRetrievingDataListener;
 import bw.bushwhack.data.models.User;
@@ -44,7 +52,8 @@ public class TrailActivity extends AppCompatActivity
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
-        OnRetrievingDataListener {
+        OnRetrievingDataListener,
+        CurrentTrailCallback {
 
     private GoogleMap mTrailMap;
     private List<User> mUsers;
@@ -339,57 +348,70 @@ public class TrailActivity extends AppCompatActivity
     // TODO: figure why it is not triggered every time on sttart up, but IS TRIGGERED ON EVERY current location button click
     @Override
     public void onCurrentUsersRetrieved(ArrayList<User> users) {
+        // check for the correct types
+        try {
 
-        mTrailMap.clear();
-        this.mUsers = users;
+
+            if (!users.isEmpty() && (users.get(0) instanceof User)) {
+                mTrailMap.clear();
+                this.mUsers = users;
 //        ArrayList<MarkerOptions> markers = new ArrayList<>();
-        // show the list of the users
-        this.displayUsersMarkers(users);
+                // show the list of the users
+                this.displayUsersMarkers(users);
+            }
+        }catch (NullPointerException npe){
+            Log.e("ErrorUsers", npe.getMessage());
+        }
     }
 
-    protected void displayUsersMarkers(ArrayList<User> users) {
+    protected void displayUsersMarkers(List<User> users) {
         // TODO: maybe add some logical filtering not to keep track of ALL the users
-        for (User person : users) {
-            if (person.getCurrentLocation() != null) {
+        if (!users.isEmpty()) {
+            if (users.get(0) instanceof User) {
+                for (User person : users) {
+                    if (person.getCurrentLocation() != null) {
 
-                // add the check for the email being different
-                if (person.getEmail() != mTrailPresenter.getCurrentUser().getEmail()) {
+                        // add the check for the email being different
+                        if (person.getEmail() != mTrailPresenter.getCurrentUser().getEmail()) {
 
-                    // Toast.makeText(this, "Person has a location", Toast.LENGTH_SHORT).show();
-                    LatLng personLocation = new LatLng(person.getCurrentLocation().getLat(), person.getCurrentLocation().getLng());
+                            // Toast.makeText(this, "Person has a location", Toast.LENGTH_SHORT).show();
+                            LatLng personLocation = new LatLng(person.getCurrentLocation().getLat(), person.getCurrentLocation().getLng());
 
-                    Location personLoc = new Location("");
-                    personLoc.setLongitude(personLocation.longitude);
-                    personLoc.setLatitude(personLocation.latitude);
+                            Location personLoc = new Location("");
+                            personLoc.setLongitude(personLocation.longitude);
+                            personLoc.setLatitude(personLocation.latitude);
 
-                    float totalDistance = personLoc.distanceTo(mLastKnownLocation);
-                    Double kmDistance = Math.floor(totalDistance / 1000);
-                    Double mDistance = Math.floor(totalDistance % 1000);
+                            float totalDistance = personLoc.distanceTo(mLastKnownLocation);
+                            Double kmDistance = Math.floor(totalDistance / 1000);
+                            Double mDistance = Math.floor(totalDistance % 1000);
 
-                    // TODO: find the way to display custom markers
-                    BitmapDescriptor icon = BitmapDescriptorFactory
-                            .fromResource(R.drawable.ic_person_pin_circle_black_24dp);
+                            // TODO: find the way to display custom markers
+//                            BitmapDescriptor icon = BitmapDescriptorFactory
+//                                    .fromResource(R.drawable.ic_person_pin_circle_black_24dp);
 
-                    mTrailMap.addMarker(new MarkerOptions()
-                                    .position(personLocation)
-                                    .title(person.getName().toString())
+                            mTrailMap.addMarker(new MarkerOptions()
+                                            .position(personLocation)
+                                            .title(person.getName().toString())
 //                                    .icon(icon)
-                                    .snippet("From you: "
-                                            +
-                                            kmDistance.intValue()
-                                            +
-                                            " km "
-                                            +
-                                            mDistance.intValue()
+                                            .snippet("From you: "
+                                                    +
+                                                    kmDistance.intValue()
+                                                    +
+                                                    " km "
+                                                    +
+                                                    mDistance.intValue()
 //                                            LocationUtil.CalculationByDistance(
 //                                            new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLatitude())
 //                                            , personLocation)
-                                            + " m")
-                            //.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_person_black_24dp))
-                    );
+                                                    + " m")
+//                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_person_black_24dp))
+                            );
+                        }
+                    }
                 }
             }
         }
+
     }
 
 
@@ -397,5 +419,43 @@ public class TrailActivity extends AppCompatActivity
     public void onErrorOccurance(Error error) {
 
         Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRetrievedMarkers(List<Marker> markerList) {
+
+        try {
+            // this is bad...
+            // clear the map
+            mTrailMap.clear();
+            // display the users again...
+            for (Marker marker : markerList) {
+
+                LatLng markerLocation = new LatLng(marker.getLocation().getLat()
+                        , marker.getLocation().getLng());
+                String markerName = marker.getName();
+
+                // TODO: get the bitmap from the drawable
+                // get the icon from the vector drawable
+//                Drawable vectorDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_golf_course_black_24dp, null);
+//                Bitmap bitmapIcon = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
+//                        vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+//                BitmapDescriptor icon = BitmapDescriptorFactory
+//                        .fromResource(R.drawable.ic_golf_course_black_24dp);
+
+                // TODO: marker types...
+                mTrailMap.addMarker(new MarkerOptions()
+                                .position(markerLocation)
+                                .title(markerName).zIndex(100)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+                );
+            }
+
+            this.displayUsersMarkers(this.mUsers);
+
+        } catch (NullPointerException npe) {
+
+            Log.e("MarkerListNull", npe.getMessage());
+        }
     }
 }
