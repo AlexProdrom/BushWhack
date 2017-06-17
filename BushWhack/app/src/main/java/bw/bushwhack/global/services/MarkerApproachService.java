@@ -36,9 +36,6 @@ import static android.app.Notification.DEFAULT_ALL;
 public class MarkerApproachService extends Service {
 
     private LocationManager mLocationManager;
-    private FirebaseDatabase mDatabase;
-    private FirebaseAuth mAuth;
-    private FirebaseUser mUser;
     private LocationListener mLocationListenerGPS = new MyLocationListener(LocationManager.GPS_PROVIDER);
 
     private static final String TAG = "GPS";
@@ -46,8 +43,6 @@ public class MarkerApproachService extends Service {
     private static final int LOCATION_DISTANCE = 100;
     private static final int NOTIFICATION_ID = 1;
 
-    private final List<User> peopleList = new ArrayList<>();
-    private User mCurrentUser;
 
     @Nullable
     @Override
@@ -71,8 +66,6 @@ public class MarkerApproachService extends Service {
     @Override
     public void onCreate() {
         initialize();
-        setOtherUsersRef();
-        mUser = mAuth.getCurrentUser();
 
         try {
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL,
@@ -86,38 +79,6 @@ public class MarkerApproachService extends Service {
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
-        if (mDatabase == null) {
-            mDatabase = FirebaseDatabase.getInstance();
-        }
-        if (mAuth == null) {
-            mAuth = FirebaseAuth.getInstance();
-        }
-    }
-
-    public void setOtherUsersRef() {
-        DatabaseReference ref = mDatabase.getReference().child("users");
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    if (!postSnapshot.getKey().equals(mUser.getUid())) {
-                        User person = postSnapshot.getValue(User.class);
-                        peopleList.add(person);
-                    } else {
-                        mCurrentUser = postSnapshot.getValue(User.class);
-                        distanceChecks();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-    }
-
-    private void distanceChecks() {
-        createNotification();
     }
 
     private void createNotification() {

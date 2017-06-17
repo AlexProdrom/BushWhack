@@ -41,6 +41,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import bw.bushwhack.R;
 import bw.bushwhack.data.models.Marker;
@@ -273,22 +274,18 @@ public class TrailActivity extends AppCompatActivity
 
         List<Marker> markers=mTrailPresenter.getMarkers();
 
-        Toast.makeText(this,"test",Toast.LENGTH_SHORT).show();
-        for(Marker m:markers)
+        for(int i=0;i<markers.size();i++)
         {
-            Location markerLocation=new Location("");
-            markerLocation.setLatitude(m.getLocation().getLat());
-            markerLocation.setLongitude(m.getLocation().getLng());
-
-
-            //if(Math.floor(markerLocation.distanceTo(location))<2)
-                createNotification(m.getName(),Math.floor(markerLocation.distanceTo(location)));
+            Location markerLocation=markers.get(i).getLocation().getAndroidLocation();
+            double distanceToMarker=Math.floor(location.distanceTo(markerLocation));
+            if(distanceToMarker<4)
+                createNotification(markers.get(i).getName(),distanceToMarker);
         }
     }
 
     private void createNotification(String markerName,double distance) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Intent trailIntent = new Intent(getApplicationContext(), TrailActivity.class);
+         Intent trailIntent = new Intent(getApplicationContext(), TrailActivity.class);
         PendingIntent pIntent = PendingIntent.getActivity(getApplicationContext(), (int) System.currentTimeMillis(), trailIntent, 0);
 
         Notification n = new Notification.Builder(getApplicationContext())
@@ -367,7 +364,7 @@ public class TrailActivity extends AppCompatActivity
                 // for ActivityCompat#requestPermissions for more details.
             }
             enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 10, (android.location.LocationListener) this);
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 50, 3, (android.location.LocationListener) this);
 //            return enabled;
         } catch (Exception e) {
             Log.d("GPS broke", e.getMessage());
@@ -380,7 +377,7 @@ public class TrailActivity extends AppCompatActivity
     // I do not know what I am doing here
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
@@ -440,14 +437,11 @@ public class TrailActivity extends AppCompatActivity
                     if (person.getCurrentLocation() != null) {
 
                         // add the check for the email being different
-                        if (person.getEmail() != mTrailPresenter.getCurrentUser().getEmail()) {
+                        if (!Objects.equals(person.getEmail(), mTrailPresenter.getCurrentUser().getEmail())) {
 
                             // Toast.makeText(this, "Person has a location", Toast.LENGTH_SHORT).show();
-                            LatLng personLocation = new LatLng(person.getCurrentLocation().getLat(), person.getCurrentLocation().getLng());
-
-                            Location personLoc = new Location("");
-                            personLoc.setLongitude(personLocation.longitude);
-                            personLoc.setLatitude(personLocation.latitude);
+                            Location personLoc = person.getCurrentLocation().getAndroidLocation();
+                            LatLng personLocation=person.getCurrentLocation().getLatLng();
 
                             float totalDistance = personLoc.distanceTo(mLastKnownLocation);
                             Double kmDistance = Math.floor(totalDistance / 1000);
@@ -459,7 +453,7 @@ public class TrailActivity extends AppCompatActivity
 
                             mTrailMap.addMarker(new MarkerOptions()
                                             .position(personLocation)
-                                            .title(person.getName().toString())
+                                            .title(person.getName())
 //                                    .icon(icon)
                                             .snippet("From you: "
                                                     +

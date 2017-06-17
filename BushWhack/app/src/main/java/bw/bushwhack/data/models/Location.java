@@ -1,10 +1,8 @@
 package bw.bushwhack.data.models;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.IgnoreExtraProperties;
 
-/**
- * Created by prodromalex on 5/28/2017.
- */
 @IgnoreExtraProperties
 public class Location {
     private double lat;
@@ -31,5 +29,21 @@ public class Location {
 
     public void setLng(double lng) {
         this.lng = lng;
+    }
+
+    //Return the official Android/Google location type
+    public android.location.Location getAndroidLocation()
+    {
+        android.location.Location l=new android.location.Location("");
+        l.setLongitude(lng);
+        l.setLatitude(lat);
+
+        return l;
+    }
+
+    //Return the LatLng object created using the lat and lng from here
+    public LatLng getLatLng()
+    {
+        return new LatLng(lat,lng);
     }
 }
