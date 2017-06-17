@@ -37,7 +37,7 @@ public class User {
         this.mName = name;
         this.mEmail = email;
         this.currentTrail ="";
-        this.trails = new HashMap<>();
+       // this.trails = new HashMap<>();
         this.mTrails = new ArrayList<Trail>();
     }
 

@@ -20,14 +20,14 @@
             android:inputType="textPersonName"
             android:text="Name" />
 
-        <Spinner
+       <!--<Spinner
             android:id="@+id/spinnerMarkerType"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/editTextMarkerName"
             android:layout_alignRight="@+id/editTextMarkerName"
             android:layout_centerHorizontal="true"
-            android:layout_below="@+id/editTextMarkerName"/>
+            android:layout_below="@+id/editTextMarkerName"/>-->
 
     </RelativeLayout>
 </FrameLayout>

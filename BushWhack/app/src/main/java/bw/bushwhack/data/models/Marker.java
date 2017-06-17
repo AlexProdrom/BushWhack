@@ -18,10 +18,12 @@ public class Marker {
     public Marker() {
     }
 
-    public Marker(Location location, MarkerTypeEnum type, String name) {
+    public Marker(Location location, String name) {
         this.mLocation = location;
-        this.mType = type;
+        //this.mType = type;
         this.mName = name;
+        this.mIsReached = false;
+        this.mType= MarkerTypeEnum.INTERMEDIATE;
     }
 
     public Location getLocation() {

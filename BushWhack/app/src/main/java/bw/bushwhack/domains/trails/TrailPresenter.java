@@ -1,6 +1,7 @@
 package bw.bushwhack.domains.trails;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import bw.bushwhack.data.models.Marker;
 import bw.bushwhack.domains.trails.activeview.interfaces.CurrentTrailCallback;
+import bw.bushwhack.domains.trails.creating.MapsActivity;
 import bw.bushwhack.global.events.Error;
 import bw.bushwhack.global.interfaces.OnRetrievingDataListener;
 import bw.bushwhack.data.DataModel;
@@ -112,11 +114,20 @@ public class TrailPresenter implements Presenter {
             mDataCallback.onErrorOccurance(error);
     }
 
-    public void AddNewTrail(String name, Trail trail) {
-//        mCurrentUser.trails.put(name, trail);
+    public boolean AddNewTrail(Trail trail) {
+
+       try{
         mCurrentUser.addTrail(trail);
         this.mModel.saveNewTrail(trail);
-//        this.mModel.updateCurrentUser(mCurrentUser);
+           System.out.println("Trail created");
+           return true;
+       }
+       catch (Exception e){
+           System.out.println(e.toString());
+           return false;
+       }
+
+
     }
 
     // for the current trail

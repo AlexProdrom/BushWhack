@@ -3,6 +3,7 @@ package bw.bushwhack.data.models;
 import com.google.firebase.database.Exclude;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -20,21 +21,24 @@ public class Trail {
     private Dates mDate;
     private StatusEnum mStatus;
     private double mTotalDistance;
-    @Deprecated
-    public HashMap<String, Marker> mMarkers;
+
+    //@Deprecated
+    //public HashMap<String, Marker> mMarkers;
     private List<Marker> mMarkerList;
 
 
     public Trail() {
+
     }
 
-    public Trail(String name, Dates date, StatusEnum status, double totalDistance) {
+    public Trail(String name, Dates date, StatusEnum status, double totalDistance, List<Marker> markers) {
         this.mTrailName = name;
         this.mDate = date;
-        this.mMarkers = new HashMap<>();
+        //this.mMarkers = new HashMap<>();
+        this.mProgress=0.0;
         this.mStatus = status;
         this.mTotalDistance = totalDistance;
-        this.mMarkerList = new ArrayList<>();
+        this.mMarkerList = markers;
     }
 
     public Dates getDate() {
@@ -80,7 +84,7 @@ public class Trail {
         // random progress...
 //        this.mProgress = (new Random()).nextDouble() * 100;
         this.mProgress = 0.0;
-        this.mMarkers = new HashMap<>();
+        //this.mMarkers = new HashMap<>();
         this.mMarkerList = new ArrayList<>();
     }
 
@@ -109,6 +113,8 @@ public class Trail {
     }
 
     public void addMarker(Marker marker){
+        if(mMarkerList==null)
+            mMarkerList = new ArrayList<>();
         this.mMarkerList.add(marker);
     }
 

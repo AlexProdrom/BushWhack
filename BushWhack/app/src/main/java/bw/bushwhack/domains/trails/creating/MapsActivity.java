@@ -3,6 +3,7 @@ package bw.bushwhack.domains.trails.creating;
 import bw.bushwhack.R;
 import bw.bushwhack.data.enums.MarkerTypeEnum;
 import bw.bushwhack.data.enums.StatusEnum;
+import bw.bushwhack.data.models.Marker;
 import bw.bushwhack.global.events.Error;
 import bw.bushwhack.global.interfaces.OnRetrievingDataListener;
 import bw.bushwhack.data.models.Dates;
@@ -50,6 +51,7 @@ import com.google.android.gms.location.LocationListener;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -61,7 +63,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private TrailPresenter mTrailPresenter;
-    private Trail mCurrentTrail;
+    private List<Marker> mMarkers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +78,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mTrailPresenter = TrailPresenter.getInstance();
         mTrailPresenter.setCallBack(this);
-        mCurrentTrail = new Trail("Random Name",new Dates(new Date(), new Date()), StatusEnum.STARTED, 10);
+        mMarkers = new ArrayList<Marker>();
 
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
@@ -140,7 +142,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        mTrailPresenter.AddNewTrail(mEdittextTrailName.getText().toString(), mCurrentTrail);
+                        Trail currentTrail = new Trail(mEdittextTrailName.getText().toString(),
+                                new Dates(new Date(), new Date()), StatusEnum.STARTED, CalculateTrailDistance(mMarkers), mMarkers);
+
+
+                       if(mTrailPresenter.AddNewTrail(currentTrail)) 
+                           Toast.makeText(getApplication(), "You have successfully created a new trail", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -157,6 +164,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 dialog.show();
             }
         });
+    }
+
+
+    public double CalculateTrailDistance(List<Marker> markers){
+        double km = 0.0;
+
+        if(markers!=null && markers.size()>1){
+            for(int i=0; i<markers.size()-1; i++){
+                Location from = markers.get(0).getLocation().getAndroidLocation();
+                Location to = markers.get(0+1).getLocation().getAndroidLocation();
+                km += (from.distanceTo(to))/1000;
+            }
+        }
+
+        return km;
     }
 
     public void changeCameraLocation(LatLng latLng){
@@ -207,6 +229,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //Get fragment for adding new marker
         View mView = getLayoutInflater().inflate(R.layout.fragment_new_marker, null);
         final EditText mMarkerName = (EditText) mView.findViewById(R.id.editTextMarkerName);
+
+       /*
         final Spinner mSpinner = (Spinner) mView.findViewById(R.id.spinnerMarkerType);
 
         //Get arraylist from strings.xml and assign it to spinner for marker types
@@ -214,7 +238,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 android.R.layout.simple_spinner_dropdown_item,
                 getResources().getStringArray(R.array.markerTypes));
         mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mSpinner.setAdapter(mAdapter);
+        mSpinner.setAdapter(mAdapter);     */
 
         //Create alert dialog
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapsActivity.this);
@@ -223,26 +247,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                MarkerOptions options = new MarkerOptions();
-                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-                options.position(mLatLng);
-                options.title(mMarkerName.getText().toString() +" "+ mSpinner.getSelectedItem().toString());
-                mMap.addMarker(options);
-
                 bw.bushwhack.data.models.Marker marker = new bw.bushwhack.data.models.Marker(
                         new bw.bushwhack.data.models.Location(mLatLng.latitude, mLatLng.longitude),
-                        MarkerTypeEnum.INTERMEDIATE,
                         mMarkerName.getText().toString());
 
-                mCurrentTrail.addMarker(marker);
-//                mCurrentTrail.mMarkers.put(
-//                        mMarkerName.getText().toString(),
-//                        new bw.bushwhack.data.models.Marker(
-//                                new bw.bushwhack.data.models.Location(mLatLng.latitude, mLatLng.longitude),
-//                            MarkerTypeEnum.INTERMEDIATE,
-//                            mMarkerName.getText().toString())
-//                        );
+                mMarkers.add(marker);
 
+                MarkerOptions options = new MarkerOptions();
+                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                options.position(marker.getLocation().getLatLng());
+                options.title(((mMarkers.indexOf(marker))+1) + ". " + marker.getName());
+                mMap.addMarker(options);
 
             }
         });
@@ -258,6 +273,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         final AlertDialog dialog = mBuilder.create();
         dialog.show();
     }
+
 
 
     @Override
