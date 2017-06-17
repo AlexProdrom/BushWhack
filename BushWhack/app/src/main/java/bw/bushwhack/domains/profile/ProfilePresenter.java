@@ -7,6 +7,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import bw.bushwhack.data.models.Trail;
 import bw.bushwhack.data.models.User;
+import bw.bushwhack.global.events.Error;
 import bw.bushwhack.global.interfaces.OnRetrievingDataListener;
 import bw.bushwhack.global.interfaces.Presenter;
 import bw.bushwhack.data.ProfileModel;

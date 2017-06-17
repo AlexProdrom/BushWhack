@@ -3,6 +3,7 @@ package bw.bushwhack.domains.trails.creating;
 import bw.bushwhack.R;
 import bw.bushwhack.data.enums.MarkerTypeEnum;
 import bw.bushwhack.data.enums.StatusEnum;
+import bw.bushwhack.global.events.Error;
 import bw.bushwhack.global.interfaces.OnRetrievingDataListener;
 import bw.bushwhack.data.models.Dates;
 import bw.bushwhack.data.models.Trail;
@@ -74,6 +75,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mTrailPresenter = TrailPresenter.getInstance();
+        mTrailPresenter.setCallBack(this);
         mCurrentTrail = new Trail("Random Name",new Dates(new Date(), new Date()), StatusEnum.STARTED, 10);
 
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)

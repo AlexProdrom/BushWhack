@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bw.bushwhack.R;
+import bw.bushwhack.global.events.Error;
 import bw.bushwhack.global.interfaces.OnRetrievingDataListener;
 import bw.bushwhack.data.models.User;
 import bw.bushwhack.domains.trails.TrailPresenter;

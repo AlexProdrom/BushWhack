@@ -133,10 +133,12 @@ public class TrailListViewHolder extends RecyclerView.ViewHolder implements View
 
     public void setSelectionIndicator(String key){
         User user = ProfilePresenter.getInstance().getCurrentUser();
-        if(user.getCurrentTrail().equals(key)){
-            mButtonSelectedTrail.setVisibility(View.VISIBLE);
-        }else{
-            mButtonSelectedTrail.setVisibility(View.GONE);
+        if(user.getCurrentTrail() != null){
+            if(user.getCurrentTrail().equals(key)){
+                mButtonSelectedTrail.setVisibility(View.VISIBLE);
+            }else{
+                mButtonSelectedTrail.setVisibility(View.GONE);
+            }
         }
     }
 
