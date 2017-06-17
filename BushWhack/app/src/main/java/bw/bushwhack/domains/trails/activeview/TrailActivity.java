@@ -1,6 +1,9 @@
 package bw.bushwhack.domains.trails.activeview;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -10,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -47,6 +51,8 @@ import bw.bushwhack.data.models.User;
 import bw.bushwhack.domains.trails.TrailPresenter;
 import bw.bushwhack.global.services.MarkerApproachService;
 
+import static android.app.Notification.DEFAULT_ALL;
+
 public class TrailActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -69,6 +75,7 @@ public class TrailActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        checkLocationPermission();
         // set the presenter integration
         this.mTrailPresenter = TrailPresenter.getInstance();
         mTrailPresenter.setCallBack(this);
@@ -84,6 +91,7 @@ public class TrailActivity extends AppCompatActivity
 
     //onStart and onStop in order to manage the notifications through service when user is away from the current trail
 
+    /*
     @Override
     protected void onStart() {
         super.onStart();
@@ -97,6 +105,7 @@ public class TrailActivity extends AppCompatActivity
         Intent markerApproachService = new Intent(this, MarkerApproachService.class);
         startService(markerApproachService);
     }
+    */
 
     public void changeCameraLocation(LatLng latLng) {
         mTrailMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -213,8 +222,8 @@ public class TrailActivity extends AppCompatActivity
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setInterval(0);
+        mLocationRequest.setFastestInterval(0);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
@@ -256,9 +265,38 @@ public class TrailActivity extends AppCompatActivity
 
         // change the user markers
         if (this.mUsers != null) {
-
             this.displayUsersMarkers((ArrayList<User>) this.mUsers);
         }
+
+        List<Marker> markers=mTrailPresenter.getMarkers();
+
+        Toast.makeText(this,"test",Toast.LENGTH_SHORT).show();
+        for(Marker m:markers)
+        {
+            Location markerLocation=new Location("");
+            markerLocation.setLatitude(m.getLocation().getLat());
+            markerLocation.setLongitude(m.getLocation().getLng());
+
+
+            //if(Math.floor(markerLocation.distanceTo(location))<2)
+                createNotification(m.getName(),Math.floor(markerLocation.distanceTo(location)));
+        }
+    }
+
+    private void createNotification(String markerName,double distance) {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Intent trailIntent = new Intent(getApplicationContext(), TrailActivity.class);
+        PendingIntent pIntent = PendingIntent.getActivity(getApplicationContext(), (int) System.currentTimeMillis(), trailIntent, 0);
+
+        Notification n = new Notification.Builder(getApplicationContext())
+                .setContentTitle("BushWhack")
+                .setContentText("Approaching marker "+markerName+" in "+distance+"m !")
+                .setSmallIcon(R.drawable.ic_marker_notification)
+                .setContentIntent(pIntent)
+                .setDefaults(DEFAULT_ALL)
+                .build();
+
+        notificationManager.notify(((int) System.currentTimeMillis()), n);
     }
 
     // the code from StackOverflow to check if the permission is fine and all that

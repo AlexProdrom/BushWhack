@@ -44,12 +44,15 @@ public class TrailPresenter implements Presenter {
         return mUsers;
     }
 
+    public List<Marker> getMarkers(){return mMarkers;}
+
     private DataModel mModel;
     private EventBus mBus = EventBus.getDefault();
     private OnRetrievingDataListener mDataCallback;
 
     private User mCurrentUser;
     private List<User> mUsers;
+    private List<Marker> mMarkers;
 
     private TrailPresenter(DataModel model) {
         this.mModel = model;
@@ -130,7 +133,7 @@ public class TrailPresenter implements Presenter {
         try {
 
             if (!markerList.isEmpty() && (markerList.get(0) instanceof Marker)) {
-
+                this.mMarkers=markerList;
                 ((CurrentTrailCallback) this.mDataCallback).onRetrievedMarkers(markerList);
             }
         } catch (Exception e) {
