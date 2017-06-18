@@ -3,11 +3,6 @@ package bw.bushwhack.data.models;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
-/**
- * Created by prodromalex on 5/28/2017.
- */
 
 @IgnoreExtraProperties
 public class User {
@@ -16,38 +11,33 @@ public class User {
     private String mName;
     private String mEmail;
     private String currentTrail;
-    @Deprecated
-    public HashMap<String, Trail> trails;
     private ArrayList<Trail> mTrails;
 
-    // [Constructors]
-
     public User() {
-        this.trails = new HashMap<>();
-        this.mTrails = new ArrayList<Trail>();
+        this.mTrails = new ArrayList<>();
     }
-//
-//    @Deprecated
-//    public User(String name) {
-//        this.name = name;
-//        this.trails = new HashMap<>();
-//    }
 
     public User(String name, String email) {
         this.mName = name;
         this.mEmail = email;
-        this.currentTrail ="";
-       // this.trails = new HashMap<>();
-        this.mTrails = new ArrayList<Trail>();
+        this.currentTrail = "";
+        this.mTrails = new ArrayList<>();
     }
 
-    public String getCurrentTrail() {return this.currentTrail;}
-    public String setCurrentTrail(String key){
+    public String getCurrentTrail() {
+        return this.currentTrail;
+    }
+
+    public String setCurrentTrail(String key) {
         return this.currentTrail = key;
     }
 
     public String getEmail() {
         return this.mEmail;
+    }
+
+    public void setEmail(String email) {
+        this.mEmail = email;
     }
 
     public String getName() {
@@ -57,8 +47,6 @@ public class User {
     public void setName(String name) {
         this.mName = name;
     }
-
-    public void setEmail(String email) { this.mEmail = email; }
 
     public Location getCurrentLocation() {
         return mCurrentLocation;
@@ -74,6 +62,4 @@ public class User {
         }
         this.mTrails.add(t);
     }
-
-
 }

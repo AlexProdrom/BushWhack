@@ -3,16 +3,11 @@ package bw.bushwhack.data.models;
 import com.google.firebase.database.Exclude;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 import bw.bushwhack.data.enums.StatusEnum;
 
-/**
- * Created by prodromalex on 5/28/2017.
- */
 
 public class Trail {
 
@@ -22,20 +17,15 @@ public class Trail {
     private StatusEnum mStatus;
     private double mTotalDistance;
 
-    //@Deprecated
-    //public HashMap<String, Marker> mMarkers;
     private List<Marker> mMarkerList;
 
-
     public Trail() {
-
     }
 
     public Trail(String name, Dates date, StatusEnum status, double totalDistance, List<Marker> markers) {
         this.mTrailName = name;
         this.mDate = date;
-        //this.mMarkers = new HashMap<>();
-        this.mProgress=0.0;
+        this.mProgress = 0.0;
         this.mStatus = status;
         this.mTotalDistance = totalDistance;
         this.mMarkerList = markers;
@@ -45,7 +35,7 @@ public class Trail {
         return mDate;
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.mTrailName = name;
     }
 
@@ -112,13 +102,13 @@ public class Trail {
         return trails;
     }
 
-    public void addMarker(Marker marker){
-        if(mMarkerList==null)
+    public void addMarker(Marker marker) {
+        if (mMarkerList == null)
             mMarkerList = new ArrayList<>();
         this.mMarkerList.add(marker);
     }
 
-    public List<Marker> getMarkers(){
+    public List<Marker> getMarkers() {
         return this.mMarkerList;
     }
 }
