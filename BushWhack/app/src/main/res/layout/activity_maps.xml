@@ -31,6 +31,21 @@
             android:text="Save trail"
             android:textSize="12sp"
             android:layout_gravity="bottom|end"
+            android:padding="10dp"
+            android:layout_margin="10dp"
+            />
+
+        <Button
+            android:id="@+id/btn_viewMarkers"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:background="@color/cardview_light_background"
+            android:alpha="0.7"
+            android:text="See markers"
+            android:textSize="12sp"
+            android:layout_gravity="bottom|start"
+            android:padding="10dp"
+            android:layout_margin="10dp"
             />
 
     </fragment>

@@ -4,6 +4,7 @@ import bw.bushwhack.R;
 import bw.bushwhack.data.enums.MarkerTypeEnum;
 import bw.bushwhack.data.enums.StatusEnum;
 import bw.bushwhack.data.models.Marker;
+import bw.bushwhack.domains.trails.creating.fragments.ReorderMarkersFragment;
 import bw.bushwhack.global.events.Error;
 import bw.bushwhack.global.interfaces.OnRetrievingDataListener;
 import bw.bushwhack.data.models.Dates;
@@ -70,7 +71,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
@@ -142,6 +143,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
+                        mMarkers=ReorderMarkersFragment.mMarkers;
                         Trail currentTrail = new Trail(mEdittextTrailName.getText().toString(),
                                 new Dates(new Date(), new Date()), StatusEnum.STARTED, CalculateTrailDistance(mMarkers), mMarkers);
 
@@ -163,6 +165,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 final AlertDialog dialog = mBuilder.create();
                 dialog.show();
             }
+        });
+
+        Button btnViewMarkers = (Button) findViewById(R.id.btn_viewMarkers);
+        btnViewMarkers.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                ReorderMarkersFragment mFragment = new ReorderMarkersFragment();
+                mFragment.setmMarkers(mMarkers);
+                mFragment.show(getSupportFragmentManager(), "ReorderMarkersDialog");
+            }
+
         });
     }
 

@@ -62,4 +62,10 @@ public class Marker {
     public void setIsReached(boolean isReached) {
         this.mIsReached = isReached;
     }
+
+    @Override
+    public String toString(){
+        return this.getName();
+    }
+
 }
