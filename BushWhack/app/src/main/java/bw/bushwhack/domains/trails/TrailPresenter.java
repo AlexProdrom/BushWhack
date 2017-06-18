@@ -162,6 +162,6 @@ public class TrailPresenter implements Presenter {
      */
     @Override
     public void destroy() {
-        this.uniqueInstance = null;
+        uniqueInstance = null;
     }
 }
