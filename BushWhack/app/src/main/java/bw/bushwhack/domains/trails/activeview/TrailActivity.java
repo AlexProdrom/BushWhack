@@ -475,7 +475,7 @@ public class TrailActivity extends AppCompatActivity
                             // TODO: find the way to display custom markers
 //                            BitmapDescriptor icon = BitmapDescriptorFactory
 //                                    .fromResource(R.drawable.ic_person_pin_circle_black_24dp);
-                            if (kmDistance <= 2) {
+                            if (kmDistance < 2) {
 
 //                                float opacity = (48000/totalDistance);
 //                                if(opacity>100){
