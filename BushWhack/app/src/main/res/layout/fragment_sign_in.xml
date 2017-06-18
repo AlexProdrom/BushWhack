@@ -1,61 +1,70 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginTop="20dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="bw.bushwhack.fragments.SignInFragment">
-
+    android:layout_height="wrap_content"
+    tools:context=".domains.authorization.fragments.SignInFragment">
+    <!--android:background="@color/colorPrimary"-->
     <!-- based on the example from
     https://sourcey.com/beautiful-android-login-and-signup-screens-with-material-design/ -->
-
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="56dp"
+        android:orientation="vertical"
         android:paddingLeft="24dp"
-        android:paddingRight="24dp">
-
-        <!-- Email -->
+        android:paddingRight="24dp"
+        android:paddingTop="56dp">
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <EditText android:id="@+id/input_email"
+            android:textColorHint="@color/white">
+            <EditText
+                android:id="@+id/input_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:hint="@string/email" />
+                android:textColor="@color/white"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <EditText android:id="@+id/input_password"
+            android:textColorHint="@color/white">
+            <EditText
+                android:id="@+id/input_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:hint="@string/password"/>
+                android:textColor="@color/white"
+                android:hint="@string/password"
+                android:inputType="textPassword" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_login"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
+            android:layout_marginTop="24dp"
+            android:background="@color/colorAccent"
             android:padding="12dp"
-            android:text="@string/login"/>
+            android:text="@string/login"
+            android:textColor="#ffffffff"
+            android:textStyle="bold" />
 
-        <TextView android:id="@+id/link_signup"
+        <TextView
+            android:id="@+id/link_signup"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:text="@string/no_account_yet_create_one"
             android:gravity="center"
-            android:textSize="16sp"/>
+            android:text="@string/no_account_yet_create_one"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
 
     </LinearLayout>
 </FrameLayout>
