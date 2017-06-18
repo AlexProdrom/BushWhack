@@ -280,26 +280,28 @@ public class TrailActivity extends AppCompatActivity
             this.displayUsersMarkers((ArrayList<User>) this.mUsers);
         }
         // don't forget to show the trail markers
-        if(this.mTrailPresenter.getMarkers() != null){
+        if (this.mTrailPresenter.getMarkers() != null) {
             this.displayTrailMarkers(mTrailPresenter.getMarkers());
         }
 
         List<Marker> markers = mTrailPresenter.getMarkers();
 
-        for (int i = 0; i < markers.size(); i++) {
-            Marker m = markers.get(i);
-            Location markerLocation = m.getLocation().getAndroidLocation();
-            int distanceToMarker = (int) Math.floor(location.distanceTo(markerLocation));
-            if (distanceToMarker < MIN_DISTANCE_TO_MARKER_FOR_NOTIFICATION && !m.getIsReached()) {
+        if (markers != null) {
+            for (int i = 0; i < markers.size(); i++) {
+                Marker m = markers.get(i);
+                Location markerLocation = m.getLocation().getAndroidLocation();
+                int distanceToMarker = (int) Math.floor(location.distanceTo(markerLocation));
+                if (distanceToMarker < MIN_DISTANCE_TO_MARKER_FOR_NOTIFICATION && !m.getIsReached()) {
 
-                // locally
-                m.setIsReached(true);
-                createNotification(markers.get(i).getName(), distanceToMarker);
-                // write to the database
-                mTrailPresenter.setMarkerReached(i);
-                Log.d("MarkerReached", "Reached the marker with id: " + i + " and name " + markers.get(i).getName());
+                    // locally
+                    m.setIsReached(true);
+                    createNotification(markers.get(i).getName(), distanceToMarker);
+                    // write to the database
+                    mTrailPresenter.setMarkerReached(i);
+                    Log.d("MarkerReached", "Reached the marker with id: " + i + " and name " + markers.get(i).getName());
+                }
+
             }
-
         }
     }
 

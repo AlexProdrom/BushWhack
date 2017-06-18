@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -74,12 +75,24 @@ public class TrailListViewHolder extends RecyclerView.ViewHolder implements View
 
                 switch (menuOption) {
                     case "Start":
-                        ProfilePresenter.getInstance().setNewCurrentTrail(mTrailReferenceKey);
-                        context.startActivity(new Intent(context, TrailActivity.class));
+                        if (ProfilePresenter.getInstance().getGrantedPermissions()) {
+
+                            ProfilePresenter.getInstance().setNewCurrentTrail(mTrailReferenceKey);
+                            context.startActivity(new Intent(context, TrailActivity.class));
+                        }else{
+                            Toast.makeText(context,"Please grant location permissions first",Toast.LENGTH_SHORT).show();
+                        }
                         break;
                     case "Review":
                         self.displayTrailInfo(viewAnchor);
                         break;
+                    case "Remove":
+
+                        if(!ProfilePresenter.getInstance().removeTrail(mTrailReferenceKey)){
+                            Toast.makeText(context,"Do not delete your current trails... :C", Toast.LENGTH_SHORT).show();
+                        };
+                        break;
+
                     default:
                         Toast.makeText(context, "You chose for " + item.getTitle(), Toast.LENGTH_SHORT).show();
                         break;
@@ -100,7 +113,7 @@ public class TrailListViewHolder extends RecyclerView.ViewHolder implements View
             text = "Created " + dateString;
             // where to link
 
-        }else{
+        } else {
 
             text = "No extra information available";
         }
@@ -131,19 +144,19 @@ public class TrailListViewHolder extends RecyclerView.ViewHolder implements View
         this.mTrailDistance.setText("Distance: " + dist + " km");
     }
 
-    public void setSelectionIndicator(String key){
+    public void setSelectionIndicator(String key) {
         User user = ProfilePresenter.getInstance().getCurrentUser();
-        if(user.getCurrentTrail() != null){
-            if(user.getCurrentTrail().equals(key)){
+        if (user.getCurrentTrail() != null) {
+            if (user.getCurrentTrail().equals(key)) {
                 mButtonSelectedTrail.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 mButtonSelectedTrail.setVisibility(View.GONE);
             }
         }
     }
 
     @OnClick(R.id.button_trail_selected)
-    public void showSelected(){
+    public void showSelected() {
         Context context = this.mButtonSelectedTrail.getContext();
         Toast.makeText(context, "This is your selected trail!", Toast.LENGTH_SHORT).show();
     }

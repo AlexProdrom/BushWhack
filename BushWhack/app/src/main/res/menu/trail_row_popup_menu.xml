@@ -10,5 +10,5 @@
 
     <item
         android:id="@+id/three"
-        android:title="Cancel"/>
+        android:title="Remove"/>
 </menu>

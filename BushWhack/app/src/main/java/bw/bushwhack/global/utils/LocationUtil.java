@@ -1,10 +1,16 @@
 package bw.bushwhack.global.utils;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 /**
  * Created by Dmitry on 6/7/2017.
@@ -23,6 +29,7 @@ public class LocationUtil {
      * @param EndP
      * @return meters
      */
+    @Deprecated // due to weirdness and the better use of location.distanceTo mehtod
     static public double CalculationByDistance(LatLng StartP, LatLng EndP) {
 
         int Radius = 6371;// radius of earth in Km
@@ -49,4 +56,26 @@ public class LocationUtil {
         return Radius * c;
         //return meterInDec;
     }
+
+    /**
+     * Returns an array with permsission check results for coarse and fine location
+     *
+     * @param activity
+     * @return
+     */
+    static public int[] verifyLocationPermissions(Activity activity, int requestCode) {
+
+        String[] permissionRequests = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION};
+        int[] permissionChecks = new int[permissionRequests.length];
+        for (int i = 0; i < permissionRequests.length; i++) {
+            int permissionResult = ContextCompat.checkSelfPermission(activity, permissionRequests[i]);
+            permissionChecks[i] = permissionResult;
+        }
+        if(permissionChecks[0] == PackageManager.PERMISSION_DENIED || permissionChecks[1] == PackageManager.PERMISSION_DENIED){
+            ActivityCompat.requestPermissions(activity,permissionRequests,requestCode);
+        }
+        return permissionChecks;
+    }
+
 }
