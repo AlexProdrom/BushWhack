@@ -65,9 +65,9 @@ public class TrailActivity extends AppCompatActivity
         CurrentTrailCallback,
         android.location.LocationListener {
 
-    private final int LOCATION_UPDATE_TIME_INTERVAL = 50;
+    private final int LOCATION_UPDATE_TIME_INTERVAL = 500;
     private final int LOCATION_UPDATE_DISTANCE_INTERVAL = 3;
-    private final int MIN_DISTANCE_TO_MARKER_FOR_NOTIFICATION = 4;
+    private final int MIN_DISTANCE_TO_MARKER_FOR_NOTIFICATION = 100;
 
     private GoogleMap mTrailMap;
     private List<User> mUsers;
@@ -169,13 +169,12 @@ public class TrailActivity extends AppCompatActivity
         //  query to check if permissions are enabled
         this.checkLocationPermission();
         this.getDeviceLocation();
-        // TODO: explicitely move to the current location and write it to firebase
-        if (this.mTrailPresenter.getUsers() != null) {
-            this.onCurrentUsersRetrieved((ArrayList<User>) this.mTrailPresenter.getUsers());
-        }
+
+//        if (this.mTrailPresenter.getUsers() != null) {
+//            this.onCurrentUsersRetrieved((ArrayList<User>) this.mTrailPresenter.getUsers());
+//        }
     }
 
-    // TODO: fixed some stuff, but have to make sure the usage of the functions is not broken
     private void getDeviceLocation() {
     /*
      * Before getting the device location, you must check location
@@ -227,8 +226,8 @@ public class TrailActivity extends AppCompatActivity
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10);
-        mLocationRequest.setFastestInterval(10);
+        mLocationRequest.setInterval(100000);
+        mLocationRequest.setFastestInterval(40000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
@@ -252,6 +251,7 @@ public class TrailActivity extends AppCompatActivity
 
 
         Log.i("location changed", "set to new location" + location.toString());
+        this.mLastKnownLocation = location;
 
         // Update online location
         mTrailPresenter.updateUserLocation(
@@ -263,31 +263,45 @@ public class TrailActivity extends AppCompatActivity
         LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
 
         // changes the camera location
-        this.changeCameraLocation(latlng);
+        // dismissed due to bad user experience
+        //this.changeCameraLocation(latlng);
 
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
+        // was a dumb mistake to put it here, ridicilous I haven't removed it after
+        // now all the updates come from the location services
+//        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+//            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+//        }
 
-
-        // change the user markers
-        if (this.mUsers != null) {
+        // clear the map
+        this.mTrailMap.clear();
+        // change and redrawthe user markers
+        if (this.mTrailPresenter.getUsers() != null) {
+            this.mUsers = this.mTrailPresenter.getUsers();
             this.displayUsersMarkers((ArrayList<User>) this.mUsers);
+        }
+        // don't forget to show the trail markers
+        if (this.mTrailPresenter.getMarkers() != null) {
+            this.displayTrailMarkers(mTrailPresenter.getMarkers());
         }
 
         List<Marker> markers = mTrailPresenter.getMarkers();
 
-        for (int i = 0; i < markers.size(); i++) {
-            Location markerLocation = markers.get(i).getLocation().getAndroidLocation();
-            int distanceToMarker = (int) Math.floor(location.distanceTo(markerLocation));
-            if (distanceToMarker < MIN_DISTANCE_TO_MARKER_FOR_NOTIFICATION) {
+        if (markers != null) {
+            for (int i = 0; i < markers.size(); i++) {
+                Marker m = markers.get(i);
+                Location markerLocation = m.getLocation().getAndroidLocation();
+                int distanceToMarker = (int) Math.floor(location.distanceTo(markerLocation));
+                if (distanceToMarker < MIN_DISTANCE_TO_MARKER_FOR_NOTIFICATION && !m.getIsReached()) {
 
-                createNotification(markers.get(i).getName(), distanceToMarker);
-                // write to the database
-                mTrailPresenter.setMarkerReached(i);
-                Log.d("MarkerReached", "Reached the marker with id: " + i + " and name " + markers.get(i).getName());
+                    // locally
+                    m.setIsReached(true);
+                    createNotification(markers.get(i).getName(), distanceToMarker);
+                    // write to the database
+                    mTrailPresenter.setMarkerReached(i);
+                    Log.d("MarkerReached", "Reached the marker with id: " + i + " and name " + markers.get(i).getName());
+                }
+
             }
-
         }
     }
 
@@ -426,6 +440,12 @@ public class TrailActivity extends AppCompatActivity
                 mTrailMap.clear();
                 this.mUsers = users;
 //        ArrayList<MarkerOptions> markers = new ArrayList<>();
+                // since the map was cleaned, display the markers again
+                List<Marker> markerList = this.mTrailPresenter.getMarkers();
+                if (markerList != null) {
+
+                    this.displayTrailMarkers(markerList);
+                }
                 // show the list of the users
                 this.displayUsersMarkers(users);
             }
@@ -455,7 +475,7 @@ public class TrailActivity extends AppCompatActivity
                             // TODO: find the way to display custom markers
 //                            BitmapDescriptor icon = BitmapDescriptorFactory
 //                                    .fromResource(R.drawable.ic_person_pin_circle_black_24dp);
-                            if (kmDistance <= 2) {
+                            if (kmDistance < 2) {
 
 //                                float opacity = (48000/totalDistance);
 //                                if(opacity>100){
@@ -495,6 +515,30 @@ public class TrailActivity extends AppCompatActivity
         Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
+    private void displayTrailMarkers(List<Marker> markerList) {
+        for (Marker marker : markerList) {
+
+            LatLng markerLocation = new LatLng(marker.getLocation().getLat()
+                    , marker.getLocation().getLng());
+            String markerName = marker.getName();
+
+            // TODO: get the bitmap from the drawable
+            // get the icon from the vector drawable
+//                Drawable vectorDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_golf_course_black_24dp, null);
+//                Bitmap bitmapIcon = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
+//                        vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+//                BitmapDescriptor icon = BitmapDescriptorFactory
+//                        .fromResource(R.drawable.ic_golf_course_black_24dp);
+
+            // TODO: marker types...
+            mTrailMap.addMarker(new MarkerOptions()
+                    .position(markerLocation)
+                    .title(markerName).zIndex(100)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+            );
+        }
+    }
+
     @Override
     public void onRetrievedMarkers(List<Marker> markerList) {
 
@@ -502,29 +546,9 @@ public class TrailActivity extends AppCompatActivity
             // this is bad...
             // clear the map
             mTrailMap.clear();
-            // display the users again...
-            for (Marker marker : markerList) {
-
-                LatLng markerLocation = new LatLng(marker.getLocation().getLat()
-                        , marker.getLocation().getLng());
-                String markerName = marker.getName();
-
-                // TODO: get the bitmap from the drawable
-                // get the icon from the vector drawable
-//                Drawable vectorDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_golf_course_black_24dp, null);
-//                Bitmap bitmapIcon = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
-//                        vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-//                BitmapDescriptor icon = BitmapDescriptorFactory
-//                        .fromResource(R.drawable.ic_golf_course_black_24dp);
-
-                // TODO: marker types...
-                mTrailMap.addMarker(new MarkerOptions()
-                        .position(markerLocation)
-                        .title(markerName).zIndex(100)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
-                );
-            }
-
+            // display the markers again...
+            this.displayTrailMarkers(markerList);
+            // since the map was cleaned, display the user markers again
             this.displayUsersMarkers(this.mUsers);
 
         } catch (NullPointerException npe) {

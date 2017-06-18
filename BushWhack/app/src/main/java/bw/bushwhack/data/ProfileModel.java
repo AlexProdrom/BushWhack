@@ -36,6 +36,23 @@ public class ProfileModel {
         });
     }
 
+    /**
+     * Deletes the trail if it is not the current trail of the user
+     * @param key
+     * @param user
+     * @return
+     */
+    public boolean deleteTrail(String key, User user){
+        if(!key.equals(user.getCurrentTrail())){
+
+            // just remove it
+            FireBaseUtil.getInstance().getCurrentUserTrailsReference().child(key).removeValue();
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public void setCurrentTrail(String key, User user){
         if(user.getCurrentTrail() != null){
             FireBaseUtil.getInstance().getCurrentUserTrailsReference().child(user.getCurrentTrail()).child("selected").setValue(false);
