@@ -201,6 +201,8 @@ public class ProfileTrailListFragment extends android.support.v4.app.Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        this.mTrailListAdapter = null;
+        this.mTrailRecyclerList.setAdapter(this.mTrailListAdapter);
         mListener = null;
     }
 }

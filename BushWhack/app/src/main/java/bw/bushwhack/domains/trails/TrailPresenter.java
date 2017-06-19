@@ -157,11 +157,24 @@ public class TrailPresenter implements Presenter {
     }
 
 
+    public boolean tryStopLocationListeneres(){
+        if(this.mDataCallback != null){
+
+            return ((CurrentTrailCallback)this.mDataCallback).tryStopListeners();
+        }
+        return false;
+    }
+
     /**
      * Used to destroy the instance of the presenter
      */
     @Override
     public void destroy() {
+        if(this.mDataCallback != null){
+
+            ((CurrentTrailCallback)this.mDataCallback).tryStopListeners();
+        }
         uniqueInstance = null;
+
     }
 }

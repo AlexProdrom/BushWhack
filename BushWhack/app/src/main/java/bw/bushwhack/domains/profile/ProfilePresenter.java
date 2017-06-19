@@ -77,7 +77,7 @@ public class ProfilePresenter implements Presenter {
     }
 
     public boolean attemptContinuingATrail() {
-        return this.mCurrentUser.getCurrentTrail() != null;
+        return (this.mCurrentUser.getCurrentTrail() != null && !this.mCurrentUser.getCurrentTrail().equals(""));
     }
 
     synchronized // so that it is not killed

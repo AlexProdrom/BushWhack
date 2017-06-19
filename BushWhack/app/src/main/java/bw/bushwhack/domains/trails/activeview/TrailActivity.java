@@ -253,13 +253,18 @@ public class TrailActivity extends AppCompatActivity
         Log.i("location changed", "set to new location" + location.toString());
         this.mLastKnownLocation = location;
 
-        // Update online location
-        mTrailPresenter.updateUserLocation(
-                new bw.bushwhack.data.models.Location(
-                        location.getLatitude(),
-                        location.getLongitude()
-                )
-        );
+        try {
+
+            // Update online location
+            mTrailPresenter.updateUserLocation(
+                    new bw.bushwhack.data.models.Location(
+                            location.getLatitude(),
+                            location.getLongitude()
+                    )
+            );
+        } catch (Exception e) {
+            Log.e("ErrorUpdatingUserLoc", e.getMessage());
+        }
         LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
 
         // changes the camera location
@@ -392,6 +397,21 @@ public class TrailActivity extends AppCompatActivity
         return enabled;
     }
 
+
+    @Override
+    public boolean tryStopListeners() {
+        boolean result = false;
+        Log.d("RemListenres", "removing the listeners");
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            result = true;
+        }
+        if (this.mLocationManager != null) {
+            this.mLocationManager.removeUpdates(this);
+            result = result && true;
+        }
+        return result;
+    }
 
     // I do not know what I am doing here
     @Override

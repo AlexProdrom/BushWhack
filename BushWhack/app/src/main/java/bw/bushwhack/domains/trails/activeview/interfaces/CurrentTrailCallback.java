@@ -11,4 +11,5 @@ import bw.bushwhack.data.models.Marker;
 public interface CurrentTrailCallback {
 
     void onRetrievedMarkers(List<Marker> markerList);
+    boolean tryStopListeners();
 }
