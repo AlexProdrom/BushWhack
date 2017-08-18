@@ -44,6 +44,7 @@ public class ProfileActivity extends AppCompatActivity implements
     private int PERMSISSION_REQUEST_CODE = 123;
 
     private FirebaseAuth mAuth;
+    private Fragment mFragmentProfileTrails;
     // think about the naming...
     private ProfilePresenter mPresenter;
     private ProfileInfoFragment mProfileTab;
@@ -109,9 +110,14 @@ public class ProfileActivity extends AppCompatActivity implements
                                 break;
                             case R.id.action_settings:
                                 Toast.makeText(context, "Bye-bye bushwhack!", Toast.LENGTH_SHORT).show();
-                                mAuth.signOut();
+//                                finish();
+                                mFragmentProfileTrails.onDetach();
                                 // to clear out the presenter reference and force reinitialization on new openning
                                 mPresenter.destroy();
+                                // to try removing the location listeners
+                                TrailPresenter.getInstance().tryStopLocationListeneres();
+                                finish();
+                                mAuth.signOut();
                                 startActivity(new Intent(context, LoginActivity.class));
                                 break;
                         }
@@ -133,9 +139,9 @@ public class ProfileActivity extends AppCompatActivity implements
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.profile_toolbar_fragment_frame, mProfileTab).commit();
         // set the profile trails
-        Fragment frProfileTrails = new ProfileTrailListFragment();
+        mFragmentProfileTrails = new ProfileTrailListFragment();
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.profile_trail_list_fragment_frame, frProfileTrails).commit();
+                .add(R.id.profile_trail_list_fragment_frame, mFragmentProfileTrails).commit();
     }
 
 

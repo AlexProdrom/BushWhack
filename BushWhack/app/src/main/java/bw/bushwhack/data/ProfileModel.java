@@ -55,7 +55,10 @@ public class ProfileModel {
 
     public void setCurrentTrail(String key, User user){
         if(user.getCurrentTrail() != null){
-            FireBaseUtil.getInstance().getCurrentUserTrailsReference().child(user.getCurrentTrail()).child("selected").setValue(false);
+            if(user.getCurrentTrail().length()>0 && !user.getCurrentTrail().equals("")){
+
+                FireBaseUtil.getInstance().getCurrentUserTrailsReference().child(user.getCurrentTrail()).child("selected").setValue(false);
+            }
         }
         FireBaseUtil.getInstance().getUserCurrentTrailKeyReference().setValue(key);
         FireBaseUtil.getInstance().getCurrentUserTrailsReference().child(key).child("selected").setValue(true);

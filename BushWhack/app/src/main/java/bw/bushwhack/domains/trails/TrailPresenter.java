@@ -46,7 +46,9 @@ public class TrailPresenter implements Presenter {
         return mUsers;
     }
 
-    public List<Marker> getMarkers(){return mMarkers;}
+    public List<Marker> getMarkers() {
+        return mMarkers;
+    }
 
     private DataModel mModel;
     private EventBus mBus = EventBus.getDefault();
@@ -96,7 +98,7 @@ public class TrailPresenter implements Presenter {
         if (user != null)
             mDataCallback.onCurrentUserRetrieved(user);
         mCurrentUser = user;
-        if(this.mDataCallback instanceof CurrentTrailCallback){
+        if (this.mDataCallback instanceof CurrentTrailCallback) {
             this.retrieveCurrentTrailMarkers();
         }
     }
@@ -116,16 +118,15 @@ public class TrailPresenter implements Presenter {
 
     public boolean AddNewTrail(Trail trail) {
 
-       try{
-        mCurrentUser.addTrail(trail);
-        this.mModel.saveNewTrail(trail);
-           System.out.println("Trail created");
-           return true;
-       }
-       catch (Exception e){
-           System.out.println(e.toString());
-           return false;
-       }
+        try {
+            mCurrentUser.addTrail(trail);
+            this.mModel.saveNewTrail(trail);
+            System.out.println("Trail created");
+            return true;
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            return false;
+        }
 
 
     }
@@ -144,7 +145,7 @@ public class TrailPresenter implements Presenter {
         try {
 
             if (!markerList.isEmpty() && (markerList.get(0) instanceof Marker)) {
-                this.mMarkers=markerList;
+                this.mMarkers = markerList;
                 ((CurrentTrailCallback) this.mDataCallback).onRetrievedMarkers(markerList);
             }
         } catch (Exception e) {
@@ -152,16 +153,33 @@ public class TrailPresenter implements Presenter {
         }
     }
 
-    public void setMarkerReached(int markerNumber){
-        mModel.setMarkerReached(this.mCurrentUser.getCurrentTrail(),markerNumber);
+    public void setMarkerReached(int markerNumber) {
+        mModel.setMarkerReached(this.mCurrentUser.getCurrentTrail(), markerNumber);
     }
 
+
+    public boolean tryStopLocationListeneres() {
+        if (this.mDataCallback != null) {
+            try {
+
+                return ((CurrentTrailCallback) this.mDataCallback).tryStopListeners();
+            } catch (ClassCastException cce) {
+                Log.i("CouldntCastCallback", cce.getMessage());
+            }
+        }
+        return false;
+    }
 
     /**
      * Used to destroy the instance of the presenter
      */
     @Override
     public void destroy() {
+        if (this.mDataCallback != null) {
+
+            ((CurrentTrailCallback) this.mDataCallback).tryStopListeners();
+        }
         uniqueInstance = null;
+
     }
 }

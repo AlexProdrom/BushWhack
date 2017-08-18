@@ -143,13 +143,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        mMarkers=ReorderMarkersFragment.mMarkers;
+                        if (ReorderMarkersFragment.mMarkers != null) {
+
+                            mMarkers = ReorderMarkersFragment.mMarkers;
+                        } // else should stay the same
                         Trail currentTrail = new Trail(mEdittextTrailName.getText().toString(),
                                 new Dates(new Date(), new Date()), StatusEnum.STARTED, CalculateTrailDistance(mMarkers), mMarkers);
 
 
-                       if(mTrailPresenter.AddNewTrail(currentTrail)) 
-                           Toast.makeText(getApplication(), "You have successfully created a new trail", Toast.LENGTH_SHORT).show();
+                        if (mTrailPresenter.AddNewTrail(currentTrail))
+                            Toast.makeText(getApplication(), "You have successfully created a new trail", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -168,7 +171,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
 
         Button btnViewMarkers = (Button) findViewById(R.id.btn_viewMarkers);
-        btnViewMarkers.setOnClickListener(new View.OnClickListener(){
+        btnViewMarkers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ReorderMarkersFragment mFragment = new ReorderMarkersFragment();
@@ -180,21 +183,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    public double CalculateTrailDistance(List<Marker> markers){
+    public double CalculateTrailDistance(List<Marker> markers) {
         double km = 0.0;
 
-        if(markers!=null && markers.size()>1){
-            for(int i=0; i<markers.size()-1; i++){
+        if (markers != null && markers.size() > 1) {
+            for (int i = 0; i < markers.size() - 1; i++) {
                 Location from = markers.get(0).getLocation().getAndroidLocation();
-                Location to = markers.get(0+1).getLocation().getAndroidLocation();
-                km += (from.distanceTo(to))/1000;
+                Location to = markers.get(0 + 1).getLocation().getAndroidLocation();
+                km += (from.distanceTo(to)) / 1000;
             }
         }
 
         return km;
     }
 
-    public void changeCameraLocation(LatLng latLng){
+    public void changeCameraLocation(LatLng latLng) {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
@@ -235,7 +238,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    public void PrompUserWithMarker(LatLng latLng){
+    public void PrompUserWithMarker(LatLng latLng) {
 
         final LatLng mLatLng = latLng;
 
@@ -269,7 +272,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 MarkerOptions options = new MarkerOptions();
                 options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
                 options.position(marker.getLocation().getLatLng());
-                options.title(((mMarkers.indexOf(marker))+1) + ". " + marker.getName());
+                options.title(((mMarkers.indexOf(marker)) + 1) + ". " + marker.getName());
                 mMap.addMarker(options);
 
             }
@@ -286,7 +289,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         final AlertDialog dialog = mBuilder.create();
         dialog.show();
     }
-
 
 
     @Override
@@ -318,7 +320,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
         mTrailPresenter.updateUserLocation(new bw.bushwhack.data.models.Location(latlng.latitude, latlng.longitude));
 
-        if(mGoogleApiClient != null){
+        if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
 
@@ -330,8 +332,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED){
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest,  this);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
     }
 
@@ -346,7 +348,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    public boolean checkLocationPermission(){
+
+    public boolean checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
