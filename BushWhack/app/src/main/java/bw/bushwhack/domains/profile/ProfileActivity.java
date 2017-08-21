@@ -8,6 +8,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -15,10 +16,14 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
+import butterknife.OnClick;
 import bw.bushwhack.R;
 import bw.bushwhack.data.models.Location;
 import bw.bushwhack.domains.trails.activeview.TrailActivity;
@@ -42,6 +47,7 @@ public class ProfileActivity extends AppCompatActivity implements
     BottomNavigationView mBottomNavigation;
 
     private int PERMSISSION_REQUEST_CODE = 123;
+    private static final int GALLERY_INTENT=1;
 
     private FirebaseAuth mAuth;
     private Fragment mFragmentProfileTrails;
@@ -197,5 +203,17 @@ public class ProfileActivity extends AppCompatActivity implements
     public void onErrorOccurance(Error error) {
 
         Log.i("user in profile", error.toString());
+    }
+
+    //Image upload try-out
+    @OnClick(R.id.profile_image)
+    public void onUploadImage() {
+        Log.i("upload", "upload image!!!");
+        //Check for internet
+        mPresenter.prepareImage();
+
+        Intent picker=new Intent(Intent.ACTION_PICK);
+        picker.setType("image/*");
+        startActivityForResult(picker,GALLERY_INTENT);
     }
 }

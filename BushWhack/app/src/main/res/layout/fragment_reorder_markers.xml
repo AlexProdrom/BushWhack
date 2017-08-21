@@ -1,12 +1,11 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frag_reorderMarkers"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="bw.bushwhack.domains.trails.creating.fragments.ReorderMarkersFragment"
-    android:id="@+id/frag_reorderMarkers">
+    tools:context="bw.bushwhack.domains.trails.creating.fragments.ReorderMarkersFragment">
 
     <!-- TODO: Update blank fragment layout -->
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview_markers"
         android:layout_width="match_parent"

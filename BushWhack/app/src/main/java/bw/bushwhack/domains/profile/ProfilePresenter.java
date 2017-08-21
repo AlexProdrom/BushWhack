@@ -1,5 +1,6 @@
 package bw.bushwhack.domains.profile;
 
+import android.content.Intent;
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
@@ -110,5 +111,11 @@ public class ProfilePresenter implements Presenter {
 
             this.mInstance = null;
         }
+    }
+
+    //Image upload tryout
+    public void prepareImage()
+    {
+
     }
 }

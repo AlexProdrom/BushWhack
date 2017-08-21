@@ -6,6 +6,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -62,5 +64,11 @@ public class ProfileModel {
         }
         FireBaseUtil.getInstance().getUserCurrentTrailKeyReference().setValue(key);
         FireBaseUtil.getInstance().getCurrentUserTrailsReference().child(key).child("selected").setValue(true);
+    }
+
+    //Image upload tryout
+    public void uploadImage()
+    {
+        StorageReference strg= FirebaseStorage.getInstance().getReference();
     }
 }

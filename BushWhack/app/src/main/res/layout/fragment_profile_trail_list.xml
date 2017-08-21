@@ -5,32 +5,28 @@
     tools:context=".domains.profile.fragments.ProfileTrailListFragment">
 
     <!-- TODO: make it-->
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/cardview_shadow_end_color">
-
+        android:background="@color/cardview_shadow_end_color"
+        android:orientation="vertical">
 
         <!--<FrameLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:background="@color/cardview_light_background">-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@color/cardview_light_background">-->
 
-            <!--<Button-->
-                <!--android:id="@+id/button_add_trail"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:text="Plan a new trail" />-->
+        <!--<Button-->
+        <!--android:id="@+id/button_add_trail"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Plan a new trail" />-->
         <!--</FrameLayout>-->
-
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/planned_trails_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
 
     </LinearLayout>
 </FrameLayout>
