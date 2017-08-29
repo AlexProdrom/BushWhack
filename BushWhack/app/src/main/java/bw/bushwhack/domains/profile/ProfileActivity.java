@@ -3,6 +3,8 @@ package bw.bushwhack.domains.profile;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -11,15 +13,20 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 
@@ -50,6 +57,8 @@ public class ProfileActivity extends AppCompatActivity implements
     private static final int GALLERY_INTENT=1;
 
     private FirebaseAuth mAuth;
+    private StorageReference mStorage;
+
     private Fragment mFragmentProfileTrails;
     // think about the naming...
     private ProfilePresenter mPresenter;
@@ -133,6 +142,7 @@ public class ProfileActivity extends AppCompatActivity implements
         );
 
         mAuth = FirebaseAuth.getInstance();
+        mStorage = FirebaseStorage.getInstance().getReference();
 
         if (mAuth.getCurrentUser() == null) {
             //starting login activity
@@ -206,14 +216,33 @@ public class ProfileActivity extends AppCompatActivity implements
     }
 
     //Image upload try-out
-    @OnClick(R.id.profile_image)
-    public void onUploadImage() {
+    public void onUploadImage(View v) {
         Log.i("upload", "upload image!!!");
-        //Check for internet
+
         mPresenter.prepareImage();
 
         Intent picker=new Intent(Intent.ACTION_PICK);
         picker.setType("image/*");
         startActivityForResult(picker,GALLERY_INTENT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode==GALLERY_INTENT && resultCode==RESULT_OK)
+        {
+            Uri uri=data.getData();
+
+            StorageReference filepath=mStorage.child("photos").child(mAuth.getCurrentUser().getUid());
+            filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>(){
+
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
+                {
+                    Toast.makeText(ProfileActivity.this,"Upload Done",Toast.LENGTH_LONG).show();
+                }
+            });
+        }
     }
 }
