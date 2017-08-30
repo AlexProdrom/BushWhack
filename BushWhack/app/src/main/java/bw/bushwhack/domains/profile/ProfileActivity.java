@@ -3,8 +3,10 @@ package bw.bushwhack.domains.profile;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -14,6 +16,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import butterknife.BindView;
@@ -27,6 +30,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -52,6 +56,9 @@ public class ProfileActivity extends AppCompatActivity implements
 
     @BindView(R.id.profile_bottom_navigation)
     BottomNavigationView mBottomNavigation;
+
+
+    ImageView mProfileImage;
 
     private int PERMSISSION_REQUEST_CODE = 123;
     private static final int GALLERY_INTENT=1;
@@ -89,6 +96,8 @@ public class ProfileActivity extends AppCompatActivity implements
         // create it if it was not yet
         mPresenter = ProfilePresenter.getInstance();
         mPresenter.setCallBack(this);
+
+        mProfileImage= (ImageView) findViewById(R.id.profile_image);
 
         ButterKnife.bind(this);
         final Context context = this;
@@ -216,6 +225,7 @@ public class ProfileActivity extends AppCompatActivity implements
     }
 
     //Image upload try-out
+    //Permission for API>22
     public void onUploadImage(View v) {
         Log.i("upload", "upload image!!!");
 
@@ -224,6 +234,13 @@ public class ProfileActivity extends AppCompatActivity implements
         Intent picker=new Intent(Intent.ACTION_PICK);
         picker.setType("image/*");
         startActivityForResult(picker,GALLERY_INTENT);
+
+
+        /*
+        --Too capture image
+        Intent intent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, CAMERA_REQUEST_CODE);
+         */
     }
 
     @Override
@@ -240,9 +257,31 @@ public class ProfileActivity extends AppCompatActivity implements
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
                 {
-                    Toast.makeText(ProfileActivity.this,"Upload Done",Toast.LENGTH_LONG).show();
+                    @SuppressWarnings("VisibleForTests") Uri downloadUri=taskSnapshot.getDownloadUrl();
+                    //Picasso.with(ProfileActivity.this).load(downloadUri).fit().centerCrop().into(mProfileImage);
+                    Toast.makeText(ProfileActivity.this,mProfileImage.toString(),Toast.LENGTH_LONG).show();
                 }
             });
         }
+        /*
+        --Too upload captured image
+        if(requestCode==CAMERA_REQUEST_CODE && resultCode==RESULT_OK)
+        {
+        progressbar.setMessage("Uploading image");
+        progressbar.show();
+
+            Uri uri=data.getData();
+            StorageReference filepath=mStorage.child("photos").child(mAuth.getCurrentUser().getUid());
+
+            filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>(){
+
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
+                {
+                progress.dismiss();
+                    Toast.makeText(ProfileActivity.this,"Upload Done",Toast.LENGTH_LONG).show();
+                }
+            });
+         */
     }
 }

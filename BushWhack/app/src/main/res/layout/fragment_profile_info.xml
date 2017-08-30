@@ -16,10 +16,10 @@
             android:layout_width="125dp"
             android:layout_height="125dp"
             android:layout_marginTop="32dp"
+            android:onClick="onUploadImage"
             android:src="@drawable/picture_dummy_a"
             app:civ_border_color="#FFFFFFFF"
-            app:civ_border_width="4dp"
-            android:onClick="onUploadImage"/>
+            app:civ_border_width="4dp" />
         <!-- civ border is not rendered for some reason-->
 
         <TextView
