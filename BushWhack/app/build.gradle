@@ -34,7 +34,7 @@ dependencies {
     //firebase authentification
     // FirebaseUI Database only
     // TODO: update the firebase configs for the app so that we can use the firebase UI thingie, ooooor use the older version
-//    compile 'com.firebaseui:firebase-ui-database:2.0.0'
+    // compile 'com.firebaseui:firebase-ui-database:2.0.0'
     // this is an old version, before update
     compile 'com.firebaseui:firebase-ui-database:1.2.0'
     compile 'com.android.support:appcompat-v7:25.3.1'

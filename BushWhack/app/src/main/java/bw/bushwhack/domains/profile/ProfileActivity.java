@@ -97,7 +97,6 @@ public class ProfileActivity extends AppCompatActivity implements
         mPresenter = ProfilePresenter.getInstance();
         mPresenter.setCallBack(this);
 
-        mProfileImage= (ImageView) findViewById(R.id.profile_image);
 
         ButterKnife.bind(this);
         final Context context = this;
@@ -210,6 +209,7 @@ public class ProfileActivity extends AppCompatActivity implements
         Log.i("user in profile", u.toString());
         mProfileTab.setProfileName(u.getName());
         mProfileTab.setProfileEmail(u.getEmail());
+        mProfileTab.setProfileImage();
     }
 
     @Override
@@ -258,7 +258,7 @@ public class ProfileActivity extends AppCompatActivity implements
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
                 {
                     @SuppressWarnings("VisibleForTests") Uri downloadUri=taskSnapshot.getDownloadUrl();
-                    //Picasso.with(ProfileActivity.this).load(downloadUri).fit().centerCrop().into(mProfileImage);
+                    mProfileTab.setProfileImage();
                     Toast.makeText(ProfileActivity.this,mProfileImage.toString(),Toast.LENGTH_LONG).show();
                 }
             });

@@ -2,18 +2,25 @@ package bw.bushwhack.domains.profile.fragments;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.Random;
 
@@ -38,6 +45,7 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
     private FirebaseDatabase mData;
+    private StorageReference mStorageRef;
 
     @BindView(R.id.text_nickname)
     TextView nickname;
@@ -60,7 +68,6 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
      */
     public static ProfileInfoFragment newInstance() {
         ProfileInfoFragment fragment = new ProfileInfoFragment();
-        // add some logic
         return fragment;
     }
 
@@ -81,10 +88,20 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
         this.nickname.setText(email);
     }
 
-    // TODO: implement set ProfileImage
-//    public void setProfileImage(){
-//
-//    }
+    public void setProfileImage(){
+        mStorageRef = FirebaseStorage.getInstance().getReference().child("photos/"+mUser.getUid());
+        mStorageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.with(getActivity()).load(uri.toString()).into(profile_image);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+
+            }
+        });
+    }
 
 
     @Override
@@ -116,32 +133,18 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
-        // View view = inflater.inflate(R.layout.fragment_profile_info, container, false);
-        // ButterKnife.bind(this,view);
-        // this.displayRandomUser();
-        // return view;
 
         View v=inflater.inflate(R.layout.fragment_profile_info, container, false);
-        //Butterknife configuration
         ButterKnife.bind(this, v);
 
         mAuth=FirebaseAuth.getInstance();
         mUser=mAuth.getCurrentUser();
-
         mData= FirebaseDatabase.getInstance();
+
         DatabaseReference ref1=mData.getReference(mUser.getUid()).child("name");
 
         return v;
     }
-
-    // doesn't need to be here actually yet
-    //    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
 
     @Override
     public void onAttach(Context context) {
