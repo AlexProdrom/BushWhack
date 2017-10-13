@@ -259,7 +259,6 @@ public class ProfileActivity extends AppCompatActivity implements
                 {
                     @SuppressWarnings("VisibleForTests") Uri downloadUri=taskSnapshot.getDownloadUrl();
                     mProfileTab.setProfileImage();
-                    Toast.makeText(ProfileActivity.this,mProfileImage.toString(),Toast.LENGTH_LONG).show();
                 }
             });
         }

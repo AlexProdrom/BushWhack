@@ -93,7 +93,7 @@ public class ProfileInfoFragment extends android.support.v4.app.Fragment {
         mStorageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                Picasso.with(getActivity()).load(uri.toString()).into(profile_image);
+                Picasso.with(getActivity()).load(uri.toString()).fit().centerInside().rotate(270).into(profile_image);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
