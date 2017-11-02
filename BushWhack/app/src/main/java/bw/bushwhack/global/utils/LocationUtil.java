@@ -12,11 +12,6 @@ import com.google.android.gms.maps.model.LatLng;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-/**
- * Created by Dmitry on 6/7/2017.
- * to be used for utility function related to the locations
- */
-
 public class LocationUtil {
 
     // TODO: this does not really work, fix needed!
@@ -72,8 +67,8 @@ public class LocationUtil {
             int permissionResult = ContextCompat.checkSelfPermission(activity, permissionRequests[i]);
             permissionChecks[i] = permissionResult;
         }
-        if(permissionChecks[0] == PackageManager.PERMISSION_DENIED || permissionChecks[1] == PackageManager.PERMISSION_DENIED){
-            ActivityCompat.requestPermissions(activity,permissionRequests,requestCode);
+        if (permissionChecks[0] == PackageManager.PERMISSION_DENIED || permissionChecks[1] == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(activity, permissionRequests, requestCode);
         }
         return permissionChecks;
     }

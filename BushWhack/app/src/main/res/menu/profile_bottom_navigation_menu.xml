@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <!-- TODO: think if we should change this option to start current trail rather than create new -->
-    <!-- we can add a separate button for creating new trails -->
+    <!-- we can add a separate floating button for creating new trails -->
     <item
         android:id="@+id/action_new_trail"
         android:enabled="true"
         android:icon="@drawable/ic_add_black_24dp"
-        android:title="New Trail"
+        android:title="@string/profile_new_trail"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_start_trail"
         android:enabled="true"
         android:icon="@drawable/ic_near_me_black_24dp"
-        android:title="Continue"
+        android:title="@string/profile_continue"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_settings"
         android:enabled="true"
         android:icon="@drawable/ic_airline_seat_individual_suite_black_24dp"
-        android:title="Quit"
+        android:title="@string/profile_quit"
         app:showAsAction="ifRoom" />
 </menu>
