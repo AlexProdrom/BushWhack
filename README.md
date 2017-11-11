@@ -7,7 +7,7 @@ BushWhack started as a simple school project but during the development we found
 
 The app can be downloaded using the link to the signed apk!
 
-[BushWhack.apk]()
+[BushWhack.apk](https://drive.google.com/file/d/0BwmasDs0FBeNWWNMR2ZSVnMtekU/view)
 
 ## Guidelines
 Create an account or log in with your email and manage your trails. You will also be able to upload a profile picture but only in the next versions. 
